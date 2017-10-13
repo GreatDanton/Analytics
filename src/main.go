@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/greatdanton/analytics/controller"
-	"github.com/greatdanton/analytics/global"
-	"github.com/greatdanton/analytics/model"
+	"github.com/greatdanton/analytics/src/controller"
+	"github.com/greatdanton/analytics/src/global"
+	"github.com/greatdanton/analytics/src/model"
 	_ "github.com/lib/pq"
 )
 

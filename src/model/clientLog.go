@@ -1,6 +1,6 @@
 package model
 
-import "github.com/greatdanton/analytics/global"
+import "github.com/greatdanton/analytics/src/global"
 
 // this file will take care of inserting data into db on get and post request
 // clients

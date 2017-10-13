@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 
-	"github.com/greatdanton/analytics/global"
+	"github.com/greatdanton/analytics/src/global"
 )
 
 // CreateDB creates new empty database and drops the old tables, when setting up

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/greatdanton/analytics/client"
-	"github.com/greatdanton/analytics/global"
-	"github.com/greatdanton/analytics/model"
+	"github.com/greatdanton/analytics/src/client"
+	"github.com/greatdanton/analytics/src/global"
+	"github.com/greatdanton/analytics/src/model"
 )
 
 // MainHandler handles "/" of the application and logs user lands

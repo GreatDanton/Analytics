@@ -1,6 +1,6 @@
 package model
 
-import "github.com/greatdanton/analytics/global"
+import "github.com/greatdanton/analytics/src/global"
 
 // LoadWebsitesToMemory loads all website data into memory
 // TODO - replace this with REDIS db

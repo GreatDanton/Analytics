@@ -10,12 +10,15 @@ was made.
 Do not use this software on critical high traffic site as something will probably break.
 
 # TODO
+
 [] Add authentication
+
 [] Create admin dashboard for managing websites and displaying traffic data
+
 
 # Database design
 
-# Land
+## Land
 Land table is used for storing user traffic that appears on your website
 
     (id serial primary key,
@@ -23,7 +26,7 @@ Land table is used for storing user traffic that appears on your website
     time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     ip varchar(16));
 
-# Click
+## Click
 UserClicks table is used to store user clicks on any link on your website
 
     (id serial primary key,
@@ -32,7 +35,7 @@ UserClicks table is used to store user clicks on any link on your website
     ip varchar(16),
     url_clicked text);
 
-# Website
+## Website
 Website table is used to store website urls that you want analytics for.
 
     (id serial primary key,
@@ -41,7 +44,7 @@ Website table is used to store website urls that you want analytics for.
     active boolean,
     website_url text);
 
-# Users
+## Users
 
     (id serial primary key,
     username varchar(25) unique NOT NULL,
