@@ -1,44 +1,38 @@
 package setup
 
 import (
-	"database/sql"
+	"encoding/json"
 	"flag"
-	"fmt"
+	"io/ioutil"
 	"log"
 
-	"github.com/greatdanton/analytics/src/global"
 	"github.com/greatdanton/analytics/src/model"
 )
 
-// AppSetup sets up everything
-// reads configuration file, establish connection with database,
-// creates database based on command line flags,
-// loads website table into memory -> for faster access
-func AppSetup() {
-	config := global.ReadConfig()
-	fmt.Printf("Running server on: http://127.0.0.1:%v\n", config.Port)
-
-	// open database connection
-	connection := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", config.DbUser, config.DbPassword, config.DbName)
-	db, err := sql.Open("postgres", connection)
-	if err != nil {
-		log.Fatal("Cannot open db connection:", err)
-	}
-	defer db.Close()
-	global.DB = db
-
-	// handle cmd flags -> create production or testing database based
-	// on env=(test, setup) variable
-	HandleCmdFlags()
-
-	// load all websites data into memory, replace this function with REDIS db
-	global.Websites, err = model.LoadWebsitesToMemory()
-	if err != nil {
-		fmt.Println("LoadWebsitesToMemory:", err)
-		return
-	}
-	fmt.Println(global.Websites)
+// Configuration struct is used to hold the data parsed
+// from config.json file
+type Configuration struct {
+	Port       string
+	DbUser     string
+	DbPassword string
+	DbName     string
 }
+
+// ReadConfig reads configuration from config.json and returns
+// Configuration file filled with data
+func ReadConfig() Configuration {
+	data, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		log.Fatal("Please add config.json file: ", err)
+	}
+	config := Configuration{}
+	if err := json.Unmarshal(data, &config); err != nil {
+		log.Fatal("Please format configuration file correctly:", err)
+	}
+	// return configuration struct
+	return config
+}
+
 
 // HandleCmdFlags handles command line flags of the application for creating
 // new:
@@ -48,6 +42,7 @@ func HandleCmdFlags() {
 	// parsing environement flag
 	wordPtr := flag.String("env", "", "use test for setting testing environment or new when setting up application")
 	flag.Parse()
+
 	if *wordPtr == "test" {
 		// setUp our database (for developers) -> remove old tables and setup new ones
 		model.CreateTestDB()
