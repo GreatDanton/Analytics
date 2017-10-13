@@ -10,64 +10,165 @@ import (
 //analytics application for the first time.
 func CreateDB() {
 	// USERS TABLE
-	_, err := global.DB.Exec(`drop table if exists users cascade`)
+	err := dropUsers()
 	if err != nil {
 		fmt.Println("Could not drop table users:", err)
 		return
 	}
-	_, err = global.DB.Exec(`CREATE TABLE users(id serial primary key,
-												username varchar(25) unique NOT NULL,
-												email text unique NOT NULL,
-												password varchar(60) NOT NULL);`)
 
+	err = createUsers()
+	if err != nil {
+		fmt.Println("Could not create users table:", err)
+		return
+	}
 	// WEBSITE TABLE
-	_, err = global.DB.Exec(`drop table if exists website cascade`)
+	err = dropWebsite()
 	if err != nil {
 		fmt.Println("Could not drop table website:", err)
 		return
 	}
 
-	_, err = global.DB.Exec(`CREATE TABLE website(id serial primary key,
-												  short_url varchar(8) UNIQUE,
-												  owner integer references users(id) on delete cascade,
-												  active boolean,
-												  website_url text)`)
+	err = createWebsite()
 	if err != nil {
-		fmt.Println("Could not create table website:", err)
+		fmt.Println("Could not create website:", err)
 		return
 	}
 
 	// CLICK TABLE
-	_, err = global.DB.Exec(`drop table if exists click cascade`)
+	err = dropClick()
 	if err != nil {
 		fmt.Println("Could not drop table click:", err)
 		return
 	}
-	_, err = global.DB.Exec(`CREATE TABLE click(id serial primary key,
-												website_id integer references website(id) on delete cascade,
-												time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-												ip varchar(16),
-												url_clicked text);`)
+
+	err = createClick()
 	if err != nil {
 		fmt.Println("Could not create table click:", err)
 		return
 	}
 
 	// LAND TABLE
-	_, err = global.DB.Exec(`drop table if exists land cascade`)
+	err = dropLand()
 	if err != nil {
 		fmt.Println("Could not drop table land:", err)
 		return
 	}
 
-	_, err = global.DB.Exec(`CREATE TABLE land(id serial primary key,
-											   website_id integer references website(id) on delete cascade,
-											   time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-											   ip varchar(16));`)
+	err = createLand()
 	if err != nil {
 		fmt.Println("Could not create table land:", err)
 		return
 	}
 
 	fmt.Println("Database successfully set up.")
+}
+
+// drop users table
+func dropUsers() error {
+	_, err := global.DB.Exec(`drop table if exists users cascade`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// create users table
+func createUsers() error {
+	_, err := global.DB.Exec(`CREATE TABLE users(id serial primary key,
+												username varchar(25) unique NOT NULL,
+												email text unique NOT NULL,
+												password varchar(60) NOT NULL);`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// drop website table
+func dropWebsite() error {
+	_, err := global.DB.Exec(`drop table if exists website cascade`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// create website table
+func createWebsite() error {
+	_, err := global.DB.Exec(`CREATE TABLE website(id serial primary key,
+												  short_url varchar(8) UNIQUE,
+												  owner integer references users(id) on delete cascade,
+												  active boolean,
+												  website_url text)`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// drop click table
+func dropClick() error {
+	// CLICK TABLE
+	_, err := global.DB.Exec(`drop table if exists click cascade`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// create click table
+func createClick() error {
+	_, err := global.DB.Exec(`CREATE TABLE click(id serial primary key,
+												website_id integer references website(id) on delete cascade,
+												time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+												ip varchar(16),
+												url_clicked text);`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// drop land table
+func dropLand() error {
+	_, err := global.DB.Exec(`drop table if exists land cascade`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// create land table
+func createLand() error {
+	_, err := global.DB.Exec(`CREATE TABLE land(id serial primary key,
+											   website_id integer references website(id) on delete cascade,
+											   time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+											   ip varchar(16));`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FirstStart creates a database and drops all old tables
+// use this when running application for the first time
+func FirstStart() {
+	CreateDB()
+}
+
+// CreateTestDB drops all old tables, creates new and inserts initial data
+func CreateTestDB() {
+	CreateDB() // drop old database and create new tables
+	_, err := global.DB.Exec(`INSERT into users(username, email, password)
+							  values('user1', 'some@email.com', '12345');`)
+	if err != nil {
+		fmt.Println("Problem inserting data into users:", err)
+		return
+	}
+	_, err = global.DB.Exec(`INSERT into website(short_url, owner, active, website_url)
+							  values('12345678', 1, TRUE, 'http://www.somewebsite.com');`)
+	if err != nil {
+		fmt.Println("Problem inserting data into website:", err)
+		return
+	}
 }

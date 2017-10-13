@@ -1,46 +1,24 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/greatdanton/analytics/src/controller"
 	"github.com/greatdanton/analytics/src/global"
-	"github.com/greatdanton/analytics/src/model"
+	"github.com/greatdanton/analytics/src/setup"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	config := global.ReadConfig()
-	fmt.Printf("Running server on: http://127.0.0.1:%v\n", config.Port)
+	// set everything up -> read config, connect to db, set up db
+	setup.AppSetup()
 
-	// open database connection
-	connection := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", config.DbUser, config.DbPassword, config.DbName)
-	db, err := sql.Open("postgres", connection)
-	if err != nil {
-		log.Fatal("Cannot open db connection:", err)
-	}
-	defer db.Close()
-	global.DB = db
-
-	// create new db
-	//model.CreateDB()
-	model.CreateTestDB()
-
-	// load all websites data into memory, replace this function with REDIS db
-	global.Websites, err = model.LoadWebsitesToMemory()
-	if err != nil {
-		fmt.Println("LoadWebsitesToMemory:", err)
-		return
-	}
-	fmt.Println(global.Websites)
-
-	// handlers
+	// app handlers
 	http.HandleFunc("/", controller.MainHandler)
+
 	// start server
-	if err := http.ListenAndServe(":"+config.Port, nil); err != nil {
+	if err := http.ListenAndServe(":"+global.Config.Port, nil); err != nil {
 		log.Fatal(err)
 	}
 }

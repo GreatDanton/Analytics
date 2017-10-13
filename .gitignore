@@ -1,3 +1,3 @@
 config.json
-model/createTestDB.go
 build
+pushToServer.sh

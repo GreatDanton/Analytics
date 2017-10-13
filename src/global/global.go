@@ -13,6 +13,10 @@ import (
 // on application startup
 var DB *sql.DB
 
+// Config is global configuration variable for storing
+// data parsed from config.json file
+var Config Configuration
+
 // Configuration struct is used to hold the data parsed
 // from config.json file
 type Configuration struct {
