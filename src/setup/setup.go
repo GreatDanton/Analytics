@@ -33,7 +33,6 @@ func ReadConfig() Configuration {
 	return config
 }
 
-
 // HandleCmdFlags handles command line flags of the application for creating
 // new:
 // - production database (empty)

@@ -12,8 +12,10 @@ import (
 // MainHandler handles "/" of the application and logs user lands
 // or chosen links from website
 func MainHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("")
 	fmt.Println("Origin:", r.Header.Get("Origin"))
-	w.Header().Set("Access-Control-Allow-Origin", "*") // remove cors error in console
+	w.Header().Set("Access-Control-Allow-Origin", "*") // allow access from all origins
+
 	if r.Method == "POST" {
 		r.ParseForm()
 		// check if 'link' exist in form => user clicked on link
@@ -28,7 +30,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 func userLands(w http.ResponseWriter, r *http.Request) {
 	c := client.GetInfo(r)
-	fmt.Println("")
 	fmt.Println("User Landed")
 	printClientInfo(c)
 
@@ -52,7 +53,6 @@ func userLands(w http.ResponseWriter, r *http.Request) {
 
 // userClicks log user link clicks that occurs on website
 func userClicks(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("")
 	c := client.GetInfo(r)
 	fmt.Println("UserClicked")
 	printClientInfo(c)
