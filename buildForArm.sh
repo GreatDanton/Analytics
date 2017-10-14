@@ -14,15 +14,17 @@ set -e
 
 # path variables ROOTDIR/SUBDIR
 ROOTDIR="build"
-SUBDIR="armBuild"
+SUBDIR="armBuild" # located inside build/
+# name of the final app binary
+NAME="analytics"
 
 echo ""
 echo "*************************************"
-echo "* Start building analytics software *"
+echo "* Start building $NAME software"
 echo "*************************************"
 
 # set up OS and architecture
-env GOOS=linux GOARCH=arm go build -o analytics src/main.go
+env GOOS=linux GOARCH=arm go build -o $NAME src/main.go
 echo ""
 echo "Code successfully compiled"
 

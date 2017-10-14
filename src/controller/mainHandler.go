@@ -30,8 +30,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 
 func userLands(w http.ResponseWriter, r *http.Request) {
 	c := client.GetInfo(r)
-	fmt.Println("User Landed")
-	printClientInfo(c)
 
 	request := c.Request
 	data, ok := global.Websites[request]
@@ -39,8 +37,10 @@ func userLands(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("This website shortURL %v does not exist in db: %v\n", request, ok)
 		return
 	}
-	fmt.Println(data.ID)
-	fmt.Println(data.WebsiteURL)
+
+	// print client info if request is valid
+	fmt.Println("User Landed")
+	printClientInfo(c)
 
 	clientIP := c.IP
 	websiteID := data.ID
@@ -54,8 +54,6 @@ func userLands(w http.ResponseWriter, r *http.Request) {
 // userClicks log user link clicks that occurs on website
 func userClicks(w http.ResponseWriter, r *http.Request) {
 	c := client.GetInfo(r)
-	fmt.Println("UserClicked")
-	printClientInfo(c)
 
 	request := c.Request
 	data, ok := global.Websites[request]
@@ -63,8 +61,11 @@ func userClicks(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("This website shortURL %v does not exist in db: %v", request, ok)
 		return
 	}
-	// parse post request
-	//r.ParseForm()
+
+	// display client info if request is valid
+	fmt.Println("UserClicked")
+	printClientInfo(c)
+
 	clickedLink := r.Form["link"][0]
 	if len(clickedLink) > 7 { // http://
 		model.LogClientRequest(c.IP, clickedLink, data.ID)

@@ -18,12 +18,20 @@ Do not use this software on critical high traffic site as something will probabl
 
 # Database design
 
+## Browser
+Storing browser versions into database, so we can reference them in other
+tables by their ids
+
+    (id serial primary key,
+     browser text);
+
 ## Land
 Land table is used for storing user traffic that appears on your website
 
     (id serial primary key,
     website_id integer references Website(id) on delete cascade,
     time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    browser_id integer references browser(id),
     ip varchar(16));
 
 ## Click
@@ -32,6 +40,7 @@ UserClicks table is used to store user clicks on any link on your website
     (id serial primary key,
     website_id integer references Website(id) on delete cascade,
     time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    browser_id integer references browser(id),
     ip varchar(16),
     url_clicked text);
 

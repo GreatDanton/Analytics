@@ -1,3 +1,4 @@
 config.json
 build
 pushToServer.sh
+deploy.sh

@@ -41,7 +41,6 @@ func HandleCmdFlags() {
 	// parsing environement flag
 	wordPtr := flag.String("env", "", "use test for setting testing environment or new when setting up application")
 	flag.Parse()
-
 	if *wordPtr == "test" {
 		// setUp our database (for developers) -> remove old tables and setup new ones
 		model.CreateTestDB()

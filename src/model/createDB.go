@@ -34,6 +34,18 @@ func CreateDB() {
 		return
 	}
 
+	// BROWSER table
+	err = dropBrowser()
+	if err != nil {
+		fmt.Println("Could not drop table browser")
+		return
+	}
+	err = createBrowser()
+	if err != nil {
+		fmt.Println("Could not create browser table")
+		return
+	}
+
 	// CLICK TABLE
 	err = dropClick()
 	if err != nil {
@@ -53,7 +65,6 @@ func CreateDB() {
 		fmt.Println("Could not drop table land:", err)
 		return
 	}
-
 	err = createLand()
 	if err != nil {
 		fmt.Println("Could not create table land:", err)
@@ -121,6 +132,7 @@ func createClick() error {
 	_, err := global.DB.Exec(`CREATE TABLE click(id serial primary key,
 												website_id integer references website(id) on delete cascade,
 												time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+												browser_id integer references browser(id),
 												ip varchar(16),
 												url_clicked text);`)
 	if err != nil {
@@ -143,7 +155,27 @@ func createLand() error {
 	_, err := global.DB.Exec(`CREATE TABLE land(id serial primary key,
 											   website_id integer references website(id) on delete cascade,
 											   time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+											   browser_id integer references browser(id),
 											   ip varchar(16));`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// drop browser table
+func dropBrowser() error {
+	_, err := global.DB.Exec(`drop table if exists browser cascade`)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// create browser table
+func createBrowser() error {
+	_, err := global.DB.Exec(`CREATE TABLE browser(id serial primary key,
+												   version text UNIQUE)`)
 	if err != nil {
 		return err
 	}

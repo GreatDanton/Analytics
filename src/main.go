@@ -27,9 +27,10 @@ func main() {
 	defer db.Close()
 	global.DB = db
 
+	// handle command line flags -env=[setup, test]
 	setup.HandleCmdFlags()
 
-	// load all websites data into memory, replace this function with REDIS db
+	// load all websites data into memory, TODO: replace this function with REDIS db
 	global.Websites, err = model.LoadWebsitesToMemory()
 	if err != nil {
 		log.Fatal("Cannot load websites to memory:", err)
