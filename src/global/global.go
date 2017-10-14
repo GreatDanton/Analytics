@@ -2,6 +2,7 @@ package global
 
 import (
 	"database/sql"
+	"html/template"
 )
 
 // This package is used to hold all global variables
@@ -18,3 +19,6 @@ type Website struct {
 
 // Websites var holds data for each website in database
 var Websites map[string]Website
+
+// Templates is storing all template .html files
+var Templates *template.Template

@@ -3,9 +3,11 @@ package setup
 import (
 	"encoding/json"
 	"flag"
+	"html/template"
 	"io/ioutil"
 	"log"
 
+	"github.com/greatdanton/analytics/src/global"
 	"github.com/greatdanton/analytics/src/model"
 )
 
@@ -29,6 +31,8 @@ func ReadConfig() Configuration {
 	if err := json.Unmarshal(data, &config); err != nil {
 		log.Fatal("Please format configuration file correctly:", err)
 	}
+	// parses template files and stores it into global variable
+	ParseTemplates()
 	// return configuration struct
 	return config
 }
@@ -48,4 +52,15 @@ func HandleCmdFlags() {
 		// setUp our database for the first time -> without removing old tables
 		model.FirstStart()
 	}
+}
+
+// ParseTemplates parses template files from /template directory and
+// stores them in global Templates variable
+func ParseTemplates() {
+	parsedTemplates, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	templ := template.Must(parsedTemplates, err)
+	global.Templates = templ
 }

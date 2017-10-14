@@ -39,6 +39,7 @@ func main() {
 
 	// app handlers
 	http.HandleFunc("/", controller.MainHandler)
+	http.HandleFunc("/login", controller.Login)
 
 	// start server
 	if err := http.ListenAndServe(":"+config.Port, nil); err != nil {
