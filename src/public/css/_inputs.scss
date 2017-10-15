@@ -1,0 +1,42 @@
+
+input[type="text"], input[type="password"], input[type="email"], textarea {
+    font-family: $font-family-p;
+    font-size: $font-size-p;
+    color: $color-text;
+    border: $border-inactive;
+    transition: $transition-default;
+    box-shadow: none;
+    outline: none;
+    padding: 2px 5px;
+    width: 100%;
+}
+
+input[type="text"], input[type="password"], input[type="email"]{
+    height: 30px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus,
+input[type="email"]:focus, textarea:focus {
+    border: $border-active;
+    box-shadow: $box-shadow-active;
+}
+
+label {
+    font-family: $font-family-p;
+    font-size: $font-size-p;
+    color: $color-text;
+}
+
+// display error border around input with class .error
+input[type="text"], input[type="password"], input[type="email"], textarea {
+    &.error {
+        border: $border-error;
+    }
+}
+
+input[type="text"]:focus, input[type="password"]:focus,
+input[type="email"]:focus, textarea:focus {
+    &.error {
+        box-shadow: $box-shadow-error;
+    }
+}

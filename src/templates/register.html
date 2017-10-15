@@ -1,0 +1,39 @@
+{{define "register"}}
+
+<head>
+    <title>Register Admin</title>
+    {{template "styles"}}
+</head>
+
+<body>
+    <div class="card-signup">
+        <h1 class="card-title">Register Admin</h1>
+        <form method="POST">
+            <label for="username">Username:</label>
+            <input id="username" type="text" name="username" value="{{.Username}}" />
+            <label class="error-message">{{.ErrorUsername}}</label>
+            <br/>
+            <br/>
+            <label for="email">Email:</label>
+            <input id="email" type="email" name="email" value="{{.Email}}" />
+            <label class="error-message">{{.ErrorEmail}}</label>
+            <br/>
+            <br/>
+
+            <label for="password">Password:</label>
+            <input id="password" type="password" name="password" value="{{.Password}}" />
+            <label class="error-message">{{.ErrorPassword}}</label>
+            <br/>
+            <br/>
+            <label for="password-confirm">Confirm Password:</label>
+            <input id="password-confirm" type="password" name="password-confirm" value="{{.PasswordConfirm}}" />
+            <br/>
+            <button type="submit" class="btn-submit">Register Admin</button>
+        </form>
+
+
+    </div>
+</body>
+
+
+{{end}}

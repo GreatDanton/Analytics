@@ -3,6 +3,8 @@ package model
 import (
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/greatdanton/analytics/src/global"
 )
 
@@ -88,7 +90,8 @@ func createUsers() error {
 	_, err := global.DB.Exec(`CREATE TABLE users(id serial primary key,
 												username varchar(25) unique NOT NULL,
 												email text unique NOT NULL,
-												password varchar(60) NOT NULL);`)
+												password varchar(60) NOT NULL,
+												active bool);`)
 	if err != nil {
 		return err
 	}
@@ -191,8 +194,13 @@ func FirstStart() {
 // CreateTestDB drops all old tables, creates new and inserts initial data
 func CreateTestDB() {
 	CreateDB() // drop old database and create new tables
-	_, err := global.DB.Exec(`INSERT into users(username, email, password)
-							  values('user1', 'some@email.com', '12345');`)
+	passHash, err := bcrypt.GenerateFromPassword([]byte("1234"), 10)
+	if err != nil {
+		fmt.Println("CreateTestDB: bcrypt:", err)
+		return
+	}
+	_, err = global.DB.Exec(`INSERT into users(username, email, password, active)
+							  values('user1', 'some@email.com', $1, TRUE);`, passHash)
 	if err != nil {
 		fmt.Println("Problem inserting data into users:", err)
 		return

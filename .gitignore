@@ -2,3 +2,4 @@ config.json
 build
 pushToServer.sh
 deploy.sh
+prepros-6.config

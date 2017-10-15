@@ -14,10 +14,11 @@ import (
 // Configuration struct is used to hold the data parsed
 // from config.json file
 type Configuration struct {
-	Port       string
-	DbUser     string
-	DbPassword string
-	DbName     string
+	Port             string
+	DbUser           string
+	DbPassword       string
+	DbName           string
+	JwtTokenPassword string
 }
 
 // ReadConfig reads configuration from config.json and returns
@@ -33,6 +34,7 @@ func ReadConfig() Configuration {
 	}
 	// parses template files and stores it into global variable
 	ParseTemplates()
+	global.JwtTokenPassword = config.JwtTokenPassword
 	// return configuration struct
 	return config
 }
@@ -51,6 +53,7 @@ func HandleCmdFlags() {
 	} else if *wordPtr == "setup" {
 		// setUp our database for the first time -> without removing old tables
 		model.FirstStart()
+		global.RegisterAdmin = true
 	}
 }
 

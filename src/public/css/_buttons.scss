@@ -1,0 +1,45 @@
+// button
+$color-btn-background: #3f51b5;
+$color-btn-background-hover: #303f9f;
+$color-btn-text: #fff;
+
+
+// default button
+button {
+    height: 30px;
+    background-color: $color-front-background;
+    border-radius: 3px;
+    border: $border-inactive;
+    padding: 0 10px;
+    cursor: pointer;
+    transition: $transition-default;
+    font-family: $font-family-p;
+    font-size: $font-size-p;
+}
+
+button:hover {
+    border: $border-active;
+}
+
+// button used to submit forms
+.btn-submit {
+    margin-top: 40px;
+    background-color: $color-btn-background;
+    color: $color-front-background;
+    border: none;
+    height: 40px;
+    line-height: 40px;
+    transition: $transition-default;
+    border-radius: 3px;
+    font-family: $font-family-p;
+    font-size: $font-size-p;
+    width: 100%;
+    cursor: pointer;
+    transition: $transition-default;
+}
+
+.btn-submit:hover {
+    background-color: $color-btn-background-hover;
+    border: none;
+    cursor: pointer;
+}

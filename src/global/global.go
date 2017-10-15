@@ -11,6 +11,12 @@ import (
 // on application startup
 var DB *sql.DB
 
+// RegisterAdmin takes care of displaying register page upon
+// web application startup,
+// true => display register page
+// false => do not display register page
+var RegisterAdmin bool
+
 // Website holds data about each website parsed from database
 type Website struct {
 	ID         string
@@ -22,3 +28,7 @@ var Websites map[string]Website
 
 // Templates is storing all template .html files
 var Templates *template.Template
+
+// JwtTokenPassword holds password string that is used to sign
+// signature of the JWT (that way users can not forge their jwt)
+var JwtTokenPassword string

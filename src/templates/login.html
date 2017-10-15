@@ -6,8 +6,22 @@
     {{template "styles"}}
 </head>
 
-<div class="login">
-    <h1> Login </h1>
+<div class="card-signup">
+    <h1 class="card-title"> Login </h1>
+    <form method="POST">
+        <label for="username">Username:</label>
+        <input id="username" type="text" name="username" value="{{.Username}}" autofocus />
+        <label class="error-message">{{.ErrorUsername}}</label>
+        <br/>
+        <br/>
+
+        <label for="password">Password:</label>
+        <input id="password" type="password" name="password" value="{{.Password}}" />
+        <label class="error-message">{{.ErrorPassword}}</label>
+        <br/>
+
+        <button type="submit" class="btn-submit">Log In</button>
+    </form>
 </div>
 
 </html>

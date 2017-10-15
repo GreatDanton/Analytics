@@ -1,19 +1,20 @@
 # Analytics
-Analytics software was meant as a basic replacement for Google analytics
-for my own website, since most of the modern Adblockers block Google analytics,
-the data coming from it is probably not the actual data. All I am
-interested in is the actual traffic that appears on my website and since it's hosted
-on Github I can not process requests on server side, that's why this project
-was made.
+Analytics software was meant as a basic replacement for Google Analytics
+for any website where you do not have the server access (ex. Github pages),
+so you can not process traffic data on the server side. Most of the modern
+Adblockers are blocking Google Analytics so the data coming from it is
+probably not the actual data, which is why this software was made.
 
 
-Do not use this software on critical high traffic site as something will probably break.
+Note: Do not use this software on critical high traffic site as your
+database will probably melt and the software will most likely change
+a lot in the future.
 
 # TODO
 
-[] Add authentication
+- [x] Add authentication
 
-[] Create admin dashboard for managing websites and displaying traffic data
+- [] Create admin dashboard for managing websites and displaying traffic data
 
 
 # Database design
@@ -58,4 +59,5 @@ Website table is used to store website urls that you want analytics for.
     (id serial primary key,
     username varchar(25) unique NOT NULL,
     email text unique NOT NULL,
-    password varchar(60) NOT NULL);
+    password varchar(60) NOT NULL,
+    active bool);

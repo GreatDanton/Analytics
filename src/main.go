@@ -39,7 +39,18 @@ func main() {
 
 	// app handlers
 	http.HandleFunc("/", controller.MainHandler)
-	http.HandleFunc("/login", controller.Login)
+	http.HandleFunc("/login/", controller.Login)
+	http.HandleFunc("/dashboard", controller.Dashboard)
+	http.HandleFunc("/logout/", controller.Logout)
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
+
+	// for now /register part is only accessible if the application
+	// is ran with -env=setup flag.
+	// This is just a quick temporary solution for the testing phase
+	// which will soon be replaced with a more robust one
+	if global.RegisterAdmin {
+		http.HandleFunc("/register/", controller.Register)
+	}
 
 	// start server
 	if err := http.ListenAndServe(":"+config.Port, nil); err != nil {
