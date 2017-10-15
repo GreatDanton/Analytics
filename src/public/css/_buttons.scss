@@ -21,6 +21,32 @@ button:hover {
     border: $border-active;
 }
 
+.btn {
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    background-color: $color-front-background;
+    border-radius: 3px;
+    border: $border-inactive;
+    padding: 0 10px;
+    cursor: pointer;
+    transition: $transition-default;
+    font-family: $font-family-p;
+    font-size: $font-size-p;
+    color: $color-text;
+    text-decoration: none;
+}
+
+.btn:hover {
+    border: $border-active;
+}
+
+.btn-default {
+    background-color: #eff3f6;
+    background-image: linear-gradient(-180deg, #fafbfc 0%, #eff3f6 90%);
+}
+
+
 // button used to submit forms
 .btn-submit {
     margin-top: 40px;

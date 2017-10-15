@@ -112,6 +112,7 @@ func createWebsite() error {
 	_, err := global.DB.Exec(`CREATE TABLE website(id serial primary key,
 												  short_url varchar(8) UNIQUE,
 												  owner integer references users(id) on delete cascade,
+												  name varchar(40),
 												  active boolean,
 												  website_url text)`)
 	if err != nil {
@@ -205,8 +206,8 @@ func CreateTestDB() {
 		fmt.Println("Problem inserting data into users:", err)
 		return
 	}
-	_, err = global.DB.Exec(`INSERT into website(short_url, owner, active, website_url)
-							  values('12345678', 1, TRUE, 'http://www.somewebsite.com');`)
+	_, err = global.DB.Exec(`INSERT into website(short_url, owner, name, active, website_url)
+							  values('12345678', 1, 'My website', TRUE, 'http://www.somewebsite.com');`)
 	if err != nil {
 		fmt.Println("Problem inserting data into website:", err)
 		return

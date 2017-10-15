@@ -1,5 +1,8 @@
 {{define "navbar"}}
 <div class="navbar">
-    <h1>Navbar</h1>
+    <a class="navbar-title" href="/dashboard">{{.LoggedIn.Username}}</a>
+    <div class="navbar-spacer"></div>
+    <a class="navbar-btn" href="/dashboard/new">New Website</a>
+    <a class="navbar-btn" href="/logout">Logout</a>
 </div>
 {{end}}

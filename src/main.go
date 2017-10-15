@@ -40,8 +40,11 @@ func main() {
 	// app handlers
 	http.HandleFunc("/", controller.MainHandler)
 	http.HandleFunc("/login/", controller.Login)
-	http.HandleFunc("/dashboard", controller.Dashboard)
 	http.HandleFunc("/logout/", controller.Logout)
+	http.HandleFunc("/dashboard", controller.Dashboard)
+	http.HandleFunc("/dashboard/new", controller.AddWebsite)
+	http.HandleFunc("/website/", controller.Website)
+	// server public files
 	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 
 	// for now /register part is only accessible if the application

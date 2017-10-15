@@ -33,3 +33,22 @@ func LoadWebsitesToMemory() (map[string]global.Website, error) {
 
 	return websites, nil
 }
+
+// SiteURLExistInMemory checks if short url exists in memory
+// short url ensures the website is tracked
+func SiteURLExistInMemory(shortURL string) bool {
+	w := global.Websites
+	_, exist := w[shortURL]
+	// shortURL exist in memory (and database)
+	if exist {
+		return true
+	}
+	// shortURL does not exist in memory
+	return false
+}
+
+// AddWebsiteToMemory adds website parameters to memory
+func AddWebsiteToMemory(shortURL string, id string, websiteURL string) {
+	w := global.Websites
+	w[shortURL] = global.Website{ID: id, WebsiteURL: websiteURL}
+}

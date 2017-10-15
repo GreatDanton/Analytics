@@ -1,0 +1,26 @@
+{{define "addWebsite"}}
+<!DOCTYPE html>
+
+<head>
+    <title>New website</title>
+    {{template "styles"}}
+</head>
+
+<body>
+    {{template "navbar" .}}
+    <div class="card-signup">
+        <h2 class="card-title"> Add Website </h2>
+        <form method="post">
+            <label for="name">Name:</label>
+            <input id="name" type="text" name="name" />
+            <br/>
+            <br/>
+            <label for="url">Url:</label>
+            <input id="url" type="text" name="url" />
+            <label class="error-message">{{.ErrorURL}}</label>
+
+            <button class="btn-submit" type="submit">Add New Website</button>
+        </form>
+    </div>
+</body>
+{{end}}
