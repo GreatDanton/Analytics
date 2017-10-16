@@ -16,6 +16,9 @@
             <div class="card-website">
                 <h2 class="card-title">{{.Name}}</h2>
                 <a href="{{.URL}}" target="_blank">{{.URL}}</a>
+
+                <a href="/website/{{.ID}}/edit">Edit</a>
+                <a href="/website/{{.ID}}/delete">Delete</a>
                 <a class="btn" href="/website/{{.ID}}">View Traffic</a>
             </div>
             {{end}}

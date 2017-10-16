@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/greatdanton/analytics/src/global"
-	"github.com/greatdanton/analytics/src/model/utilities"
 )
 
 // WebsiteURLExist checks if url for this particular user
@@ -48,20 +47,4 @@ func TrackNewWebsite(userID string, websiteName string, websiteURL string) error
 	// add website into memory
 	AddWebsiteToMemory(shortURL, id, websiteURL)
 	return nil
-}
-
-// CreateUniqueShortURL creates unique shortURL that
-// can be used to add new website into website database
-func CreateUniqueShortURL() (string, error) {
-	for {
-		// Create unique key
-		shortURL, err := utilities.CreateRandomShortURL()
-		if err != nil {
-			return "", err
-		}
-		exist := SiteURLExistInMemory(shortURL)
-		if !exist {
-			return shortURL, nil
-		}
-	}
 }

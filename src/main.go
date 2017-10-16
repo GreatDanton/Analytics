@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/greatdanton/analytics/src/sessions"
+
+	"github.com/go-zoo/bone"
 	"github.com/greatdanton/analytics/src/controller"
 	"github.com/greatdanton/analytics/src/global"
 	"github.com/greatdanton/analytics/src/model"
@@ -17,8 +20,9 @@ func main() {
 	// set everything up -> read config, connect to db, set up db
 	config := setup.ReadConfig()
 	fmt.Printf("Running server on: http://127.0.0.1:%v\n", config.Port)
+	r := bone.New()
 
-	// open database connection (this should be in main file)
+	// open database connection
 	connection := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable", config.DbUser, config.DbPassword, config.DbName)
 	db, err := sql.Open("postgres", connection)
 	if err != nil {
@@ -35,17 +39,20 @@ func main() {
 	if err != nil {
 		log.Fatal("Cannot load websites to memory:", err)
 	}
-	fmt.Println(global.Websites)
+	fmt.Println("Websites in memory:", global.Websites)
 
 	// app handlers
-	http.HandleFunc("/", controller.MainHandler)
-	http.HandleFunc("/login/", controller.Login)
-	http.HandleFunc("/logout/", controller.Logout)
-	http.HandleFunc("/dashboard", controller.Dashboard)
-	http.HandleFunc("/dashboard/new", controller.AddWebsite)
-	http.HandleFunc("/website/", controller.Website)
+	r.HandleFunc("/:ID", controller.MainHandler)
+	r.HandleFunc("/login/", controller.Login)
+	r.HandleFunc("/logout/", controller.Logout)
+	r.HandleFunc("/dashboard", loggedInUser(controller.Dashboard))
+	r.HandleFunc("/dashboard/new", loggedInUser(controller.AddWebsite))
+	r.HandleFunc("/website/:ID", loggedInUser(controller.Website))
+	r.HandleFunc("/website/:ID/edit", loggedInUser(controller.EditWebsite))
+	r.HandleFunc("/website/:ID/delete", loggedInUser(controller.DeleteWebsite))
+
 	// server public files
-	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
+	r.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
 
 	// for now /register part is only accessible if the application
 	// is ran with -env=setup flag.
@@ -56,7 +63,23 @@ func main() {
 	}
 
 	// start server
-	if err := http.ListenAndServe(":"+config.Port, nil); err != nil {
+	if err := http.ListenAndServe(":"+config.Port, r); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// loggedInUser is middleware that checks if the user is logged in
+// and redirects him to the /login page if he is not
+func loggedInUser(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := sessions.LoggedInUser(r)
+		// check if user is logged in
+		if !user.LoggedIn {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		// user is logged in: continue with request
+		next.ServeHTTP(w, r)
+	})
 }

@@ -21,12 +21,6 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		// if user is not logged in redirect him to login page
 		user := sessions.LoggedInUser(r)
-		if !user.LoggedIn {
-			fmt.Println("User is not logged in")
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
-
 		// get user websites and display them on dashboard
 		dashboard := dashboardDisplay{LoggedIn: user}
 		websites, err := model.GetUserWebsites(user.ID)
@@ -67,11 +61,6 @@ func AddWebsite(w http.ResponseWriter, r *http.Request) {
 // renderAddWebsite renders add website template card
 func renderAddWebsite(w http.ResponseWriter, r *http.Request, msg addWebsiteMsg) {
 	user := sessions.LoggedInUser(r)
-	if !user.LoggedIn {
-		fmt.Println("User is not logged in")
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
 	msg.LoggedIn = user
 
 	err := templates.Execute(w, "addWebsite", msg)
@@ -84,10 +73,6 @@ func renderAddWebsite(w http.ResponseWriter, r *http.Request, msg addWebsiteMsg)
 // addWebsite adds website to the database
 func addWebsite(w http.ResponseWriter, r *http.Request) {
 	user := sessions.LoggedInUser(r)
-	if !user.LoggedIn {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
 
 	err := r.ParseForm()
 	if err != nil {

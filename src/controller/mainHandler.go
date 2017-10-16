@@ -15,7 +15,6 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("")
 	fmt.Println("Origin:", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Origin", "*") // allow access from all origins
-
 	if r.Method == "POST" {
 		r.ParseForm()
 		// check if 'link' exist in form => user clicked on link

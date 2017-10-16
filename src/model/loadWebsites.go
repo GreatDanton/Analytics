@@ -1,6 +1,12 @@
 package model
 
-import "github.com/greatdanton/analytics/src/global"
+import (
+	"crypto/rand"
+	"fmt"
+	"strings"
+
+	"github.com/greatdanton/analytics/src/global"
+)
 
 // LoadWebsitesToMemory loads all website data into memory
 // TODO - replace this with REDIS db
@@ -34,9 +40,25 @@ func LoadWebsitesToMemory() (map[string]global.Website, error) {
 	return websites, nil
 }
 
+// CreateUniqueShortURL creates unique shortURL that
+// can be used to add new website into website database
+func CreateUniqueShortURL() (string, error) {
+	for {
+		// Create unique key
+		shortURL, err := createRandomShortURL()
+		if err != nil {
+			return "", err
+		}
+		exist := siteURLExistInMemory(shortURL)
+		if !exist {
+			return shortURL, nil
+		}
+	}
+}
+
 // SiteURLExistInMemory checks if short url exists in memory
 // short url ensures the website is tracked
-func SiteURLExistInMemory(shortURL string) bool {
+func siteURLExistInMemory(shortURL string) bool {
 	w := global.Websites
 	_, exist := w[shortURL]
 	// shortURL exist in memory (and database)
@@ -45,6 +67,20 @@ func SiteURLExistInMemory(shortURL string) bool {
 	}
 	// shortURL does not exist in memory
 	return false
+}
+
+// CreateRandomShortURL creates short url for website
+// (websites are identified with short url)
+// creates 8 character string
+func createRandomShortURL() (string, error) {
+	n := 4
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+	s := fmt.Sprintf("%X", b)
+	return strings.ToLower(s), nil
 }
 
 // AddWebsiteToMemory adds website parameters to memory

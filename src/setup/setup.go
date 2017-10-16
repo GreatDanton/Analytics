@@ -6,6 +6,9 @@ import (
 	"html/template"
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/greatdanton/analytics/src/global"
 	"github.com/greatdanton/analytics/src/model"
@@ -57,13 +60,24 @@ func HandleCmdFlags() {
 	}
 }
 
-// ParseTemplates parses template files from /template directory and
+// ParseTemplates parses all template files from /templates directory and
 // stores them in global Templates variable
 func ParseTemplates() {
-	parsedTemplates, err := template.ParseGlob("templates/*.html")
+	templ := template.New("")
+	err := filepath.Walk("./templates", func(path string, info os.FileInfo, err error) error {
+		if strings.Contains(path, ".html") {
+			_, err = templ.ParseFiles(path)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
+		return err
+	})
+
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ParseTemplates:", err)
 	}
-	templ := template.Must(parsedTemplates, err)
+
 	global.Templates = templ
 }

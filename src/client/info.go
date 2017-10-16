@@ -37,6 +37,10 @@ func GetInfo(r *http.Request) Client {
 func GetIP(r *http.Request) string {
 	// using reverse proxy in front of the app
 	fullIP := r.Header.Get("x-real-ip")
+	// check if x-real-ip is empty
+	if len(fullIP) < len("127.0.0.1") {
+		fullIP = r.RemoteAddr
+	}
 	//fullIP := r.RemoteAddr
 	ipArr := strings.Split(fullIP, ":")
 	// check for ipv6 ip
