@@ -54,7 +54,7 @@ mv "analytics" "$ROOTDIR/$SUBDIR"
 # copy public files => js & css & images to build folder
 cp -r "src/public" "$ROOTDIR/$SUBDIR/"
 # TODO: copy any templates (.html files) & other missing things
-
+cp -r "src/templates" "$ROOTDIR/$SUBDIR/"
 
 #########################################################
 # FINISHED - inform user

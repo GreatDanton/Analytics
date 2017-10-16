@@ -61,7 +61,7 @@ func main() {
 	// This is just a quick temporary solution for the testing phase
 	// which will soon be replaced with a more robust one
 	if global.RegisterAdmin {
-		http.HandleFunc("/register/", controller.Register)
+		r.HandleFunc("/register", controller.Register)
 	}
 
 	// start server
