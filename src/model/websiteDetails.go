@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/greatdanton/analytics/src/global"
+	"github.com/greatdanton/analytics/src/utilities"
 )
 
 // Website will hold the data of user websites
@@ -11,7 +12,7 @@ type Website struct {
 	ID       string // website id number
 	Name     string // website name
 	URL      string // website full url
-	shortURL string // website short url (identifier for collecting data)
+	ShortURL string // website short url (identifier for collecting data)
 }
 
 // WebsiteTraffic is used to parse dailyLands and number of lands
@@ -23,7 +24,7 @@ type WebsiteTraffic struct {
 
 // DailyLand holds traffic data for chosen day
 type DailyLand struct {
-	Date       string // which day lands occur
+	Date       int64  // which day lands occur
 	LandNumber string // number of lands that day
 }
 
@@ -31,10 +32,10 @@ type DailyLand struct {
 func GetWebsiteLands(websiteID string, timeStart time.Time, timeEnd time.Time) (WebsiteTraffic, error) {
 	traffic := WebsiteTraffic{}
 	// returns: day | count
-	// 2017-15-03   | 5
+	// 2017-15-03  | 5
 
-	tStart := timeStart.Format("2006-01-02")   // yyyy-mm-dd
-	tEnd := timeEnd.Format("2006-01-02 15:04") // yyyy-mm-dd hh:mm
+	tStart := timeStart.Format("2006-01-02")      // yyyy-mm-dd
+	tEnd := timeEnd.Format("2006-01-02 15:04:05") // yyyy-mm-dd hh:mm:ss
 
 	rows, err := global.DB.Query(`SELECT to_char(date_trunc('day', time), 'YYYY-MM-DD') as day, count(*) as lands
 								  FROM land
@@ -52,12 +53,18 @@ func GetWebsiteLands(websiteID string, timeStart time.Time, timeEnd time.Time) (
 		num  string
 	)
 
+	dbtime := utilities.DBtime{}
 	for rows.Next() {
 		err = rows.Scan(&date, &num)
 		if err != nil {
 			return traffic, err
 		}
-		daily := DailyLand{Date: date, LandNumber: num}
+
+		ms, err := dbtime.ToMiliSecond(date)
+		if err != nil {
+			return traffic, err
+		}
+		daily := DailyLand{Date: ms, LandNumber: num}
 		traffic.Lands = append(traffic.Lands, daily)
 		traffic.NumOfLands += num
 	}
@@ -68,6 +75,61 @@ func GetWebsiteLands(websiteID string, timeStart time.Time, timeEnd time.Time) (
 
 	// everything is allright return traffic data
 	return traffic, nil
+}
+
+// WebsiteClicks is used to hold clicks data
+type WebsiteClicks struct {
+	NumOfClicks string
+	Clicks      []DailyClicks
+}
+
+// DailyClicks holds clicks per day data
+type DailyClicks struct {
+	Date      int64
+	ClicksNum string
+}
+
+// GetNumOfClicks returns number of clicks in the given timeframe for chosen websiteID
+func GetNumOfClicks(websiteID string, timeStart time.Time, timeEnd time.Time) (WebsiteClicks, error) {
+	timeS := timeStart.Format("2006-01-02")
+	timeE := timeEnd.Format("2006-01-02 15:04:05")
+	clicks := WebsiteClicks{}
+	rows, err := global.DB.Query(`SELECT to_char(date_trunc('day', time), 'YYYY-MM-DD') as day, count(*) as num from click
+								 WHERE website_id = $1
+								 AND time >= $2
+								 AND time <= $3
+								 GROUP BY day`, websiteID, timeS, timeE)
+	defer rows.Close()
+	if err != nil {
+		return clicks, err
+	}
+
+	var (
+		date string
+		num  string
+	)
+
+	dbtime := utilities.DBtime{}
+	for rows.Next() {
+		err = rows.Scan(&date, &num)
+		if err != nil {
+			return clicks, err
+		}
+
+		ms, err := dbtime.ToMiliSecond(date)
+		if err != nil {
+			return clicks, err
+		}
+
+		clicks.Clicks = append(clicks.Clicks, DailyClicks{Date: ms, ClicksNum: num})
+		clicks.NumOfClicks += num
+	}
+	err = rows.Err()
+	if err != nil {
+		return clicks, err
+	}
+
+	return clicks, nil
 }
 
 // GetWebsiteDetail returns website data for website
@@ -90,6 +152,6 @@ func GetWebsiteDetail(websiteID, userID string) (Website, error) {
 	website.ID = id
 	website.Name = name
 	website.URL = websiteURL
-	website.shortURL = shortURL
+	website.ShortURL = shortURL
 	return website, nil
 }

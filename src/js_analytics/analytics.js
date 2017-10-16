@@ -2,7 +2,7 @@
 // that creates post ajax request with clicked link
 (function () {
     var links = document.getElementsByTagName("a");
-    var url = "http://127.0.0.1:8080/12345678" // change this url
+    var url = "http://127.0.0.1:8080/l/12345678" // change this url
     // create get request on my analytics server
     // that fires when website is loaded
     var req = new XMLHttpRequest();

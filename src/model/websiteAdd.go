@@ -48,3 +48,29 @@ func TrackNewWebsite(userID string, websiteName string, websiteURL string) error
 	AddWebsiteToMemory(shortURL, id, websiteURL)
 	return nil
 }
+
+// TODO: both edit and delete should edit, remove website from
+// in memory database
+
+// EditWebsite handles updating website row
+func EditWebsite(userID string, websiteID string, websiteName string, websiteURL string) error {
+	_, err := global.DB.Exec(`UPDATE website
+							 SET name = $1, website_url = $2
+							 where owner = $3
+							 and id = $4`, websiteName, websiteURL, userID, websiteID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteWebsite handles website deletion from the db
+func DeleteWebsite(userID string, websiteID string) error {
+	_, err := global.DB.Exec(`DELETE from website
+							  where owner = $1
+							  and id = $2`, userID, websiteID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

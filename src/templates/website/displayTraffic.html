@@ -10,10 +10,39 @@
     {{template "navbar" .}}
     <div class="main-container">
         <h1 class="card-title">{{.Website.Name}}</h1>
-        <p id="user-lands-traffic" class="hidden">{{.Traffic}}</p>
+        <a class="btn" href="/website/{{.Website.ID}}/edit">Edit</a>
+        <a class="btn" href="/website/{{.Website.ID}}/delete">Delete</a>
+
+        <div class="margin-t-40"></div>
+
+        <div class="cards-container">
+            <div class="card-small">
+                <h3>Lands:</h3>
+                <h2 id="numOfLands"></h2>
+            </div>
+
+            <div class="card-small">
+                <h3>Clicks:</h3>
+                <h2 id="numOfClicks"></h2>
+            </div>
+        </div>
+
+        <h2 class="chart-title">Client lands:</h2>
+        <canvas id="landsChart"></canvas>
+
+        <div class="margin-t-40"></div>
+
+        <h2 class="chart-title">Client clicks</h2>
+        <canvas id="clicksChart"></canvas>
     </div>
 
+    <!-- data that will be displayed on charts -->
+    <p id="user-lands-traffic" class="hidden">{{.Traffic}}</p>
+    <p id="user-clicks" class="hidden">{{.Clicks}}</p>
 </body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
+<script src="/public/js/charts.js"></script>
 <script src="/public/js/displayTraffic.js"></script>
 
 </html>

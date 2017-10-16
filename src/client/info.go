@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/greatdanton/analytics/src/utilities"
 )
 
 // Client struct holds all client data
@@ -75,6 +77,8 @@ func GetBrowserVersion(r *http.Request) string {
 // that is requested by client ex: urlString/8digitNumber
 // returns: 8digitNumber
 func GetURLRequest(r *http.Request) string {
-	u := r.RequestURI[1:] //remove first slash
+	// get last part of the requested uri (shortURL that defines
+	// website)
+	u := utilities.GetURLSuffix(r)
 	return u
 }

@@ -11,15 +11,18 @@
     <div class="main-container">
         <h2 class="card-title">Websites</h2>
 
-        <div class="website-container">
+        <div class="cards-container">
             {{range .Websites}}
             <div class="card-website">
                 <h2 class="card-title">{{.Name}}</h2>
+                <p>Url:</p>
                 <a href="{{.URL}}" target="_blank">{{.URL}}</a>
+                <br/>
+                <br/>
+                <p>Short Url: </p>
+                <p>/l/{{.ShortURL}}</p>
 
-                <a href="/website/{{.Name}}/edit">Edit</a>
-                <a href="/website/{{.Name}}/delete">Delete</a>
-                <a class="btn" href="/website/{{.ID}}">View Traffic</a>
+                <a class="btn-submit btn-website" href="/website/{{.ID}}">View Details</a>
             </div>
             {{end}}
         </div>

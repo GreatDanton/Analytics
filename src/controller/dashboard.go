@@ -40,6 +40,9 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 type addWebsiteMsg struct {
+	Type     string // type of template render: edit or add
+	Name     string
+	URL      string
 	ErrorURL string
 	LoggedIn sessions.User
 }
@@ -55,7 +58,6 @@ func AddWebsite(w http.ResponseWriter, r *http.Request) {
 	default:
 		renderAddWebsite(w, r, addWebsiteMsg{})
 	}
-
 }
 
 // renderAddWebsite renders add website template card

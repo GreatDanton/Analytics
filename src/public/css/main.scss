@@ -104,7 +104,7 @@ body {
 }
 
 
-.website-container {
+.cards-container {
     display: flex;
     flex-flow: row;
     justify-content: center;
@@ -121,11 +121,24 @@ body {
     transition: $transition-default;
     color: $color-text;
     text-decoration: none;
+    position: relative;
 }
 
 .card-website:hover {
     border: $border-active;
     box-shadow: $box-shadow-active;
+}
+
+.card-website .card-title {
+    margin-bottom: 20px;
+}
+
+.card-small {
+    width: 150px;
+    text-align: center;
+    border: $border-inactive;
+    margin: 10px;
+    padding: 10px 0;
 }
 
 .error-message {
@@ -136,8 +149,15 @@ body {
     display: none;
 }
 
+.chart-title {
+    margin-bottom: 20px;
+}
+
 // import styles for inputs and textareas
 @import "_inputs";
 
 // import buttons
 @import "_buttons";
+
+// import utilites
+@import "_utils";

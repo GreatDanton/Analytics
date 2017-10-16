@@ -41,6 +41,7 @@ func main() {
 	}
 	fmt.Println("Websites in memory:", global.Websites)
 
+	r.HandleFunc("/403", controller.Handle403)
 	// app handlers
 	r.HandleFunc("/", loggedInUser(controller.MainHandler))
 	r.HandleFunc("/l/:ID", controller.LogTraffic)

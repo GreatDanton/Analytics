@@ -2,24 +2,38 @@
 <!DOCTYPE html>
 
 <head>
+    {{if eq .Type "Edit"}}
+    <title>Edit website </title>
+    {{else}}
     <title>New website</title>
+    {{end}}
+    <!-- -->
     {{template "styles"}}
 </head>
 
 <body>
     {{template "navbar" .}}
     <div class="card-signup">
+        {{if eq .Type "Edit" }}
+        <h2 class="card-title">Edit Website</h2>
+        {{else}}
         <h2 class="card-title"> Add Website </h2>
+        {{end}}
+
         <form method="post">
             <label for="name">Name:</label>
-            <input id="name" type="text" name="name" />
+            <input id="name" type="text" name="name" value="{{.Name}}" />
             <br/>
             <br/>
             <label for="url">Url:</label>
-            <input id="url" type="text" name="url" />
+            <input id="url" type="text" name="url" value="{{.URL}}" />
             <label class="error-message">{{.ErrorURL}}</label>
 
+            {{if eq .Type "Edit"}}
+            <button class="btn-submit" type="submit">Edit Website</button>
+            {{else}}
             <button class="btn-submit" type="submit">Add New Website</button>
+            {{end}}
         </form>
     </div>
 </body>
