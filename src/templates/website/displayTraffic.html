@@ -9,10 +9,12 @@
 <body>
     {{template "navbar" .}}
     <div class="main-container">
-        <h1>Website traffic</h1>
+        <h1 class="card-title">{{.Website.Name}}</h1>
+        <p id="user-lands-traffic" class="hidden">{{.Traffic}}</p>
     </div>
 
 </body>
+<script src="/public/js/displayTraffic.js"></script>
 
 </html>
 

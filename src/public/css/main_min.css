@@ -111,6 +111,9 @@ body {
 .error-message {
   color: #cf1f1f; }
 
+.hidden {
+  display: none; }
+
 input[type="text"], input[type="password"], input[type="email"], textarea {
   font-family: "Fira Sans, Arial", sans-serif;
   font-size: 14px;

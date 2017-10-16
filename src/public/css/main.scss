@@ -132,6 +132,10 @@ body {
     color: $color-text-error;
 }
 
+.hidden {
+    display: none;
+}
+
 // import styles for inputs and textareas
 @import "_inputs";
 

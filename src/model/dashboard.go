@@ -2,18 +2,12 @@ package model
 
 import "github.com/greatdanton/analytics/src/global"
 
-// Website will hold the data of user websites
-type Website struct {
-	ID   string
-	Name string
-	URL  string
-}
-
 // GetUserWebsites returns array of user websites to be displayed
 // on main user dashboard
 func GetUserWebsites(userID string) ([]Website, error) {
 	rows, err := global.DB.Query(`SELECT id, website_url, name from website
 								  where owner = $1`, userID)
+	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}

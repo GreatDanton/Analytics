@@ -42,14 +42,15 @@ func main() {
 	fmt.Println("Websites in memory:", global.Websites)
 
 	// app handlers
-	r.HandleFunc("/:ID", controller.MainHandler)
-	r.HandleFunc("/login/", controller.Login)
-	r.HandleFunc("/logout/", controller.Logout)
+	r.HandleFunc("/", loggedInUser(controller.MainHandler))
+	r.HandleFunc("/l/:ID", controller.LogTraffic)
+	r.HandleFunc("/login", controller.Login)
+	r.HandleFunc("/logout", controller.Logout)
 	r.HandleFunc("/dashboard", loggedInUser(controller.Dashboard))
 	r.HandleFunc("/dashboard/new", loggedInUser(controller.AddWebsite))
-	r.HandleFunc("/website/:ID", loggedInUser(controller.Website))
-	r.HandleFunc("/website/:ID/edit", loggedInUser(controller.EditWebsite))
-	r.HandleFunc("/website/:ID/delete", loggedInUser(controller.DeleteWebsite))
+	r.HandleFunc("/website/:name", loggedInUser(controller.WebsiteTraffic))
+	r.HandleFunc("/website/:name/edit", loggedInUser(controller.EditWebsite))
+	r.HandleFunc("/website/:name/delete", loggedInUser(controller.DeleteWebsite))
 
 	// server public files
 	r.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
@@ -78,7 +79,6 @@ func loggedInUser(next http.HandlerFunc) http.HandlerFunc {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
-
 		// user is logged in: continue with request
 		next.ServeHTTP(w, r)
 	})

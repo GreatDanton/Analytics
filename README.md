@@ -14,7 +14,7 @@ a lot in the future.
 
 - [x] Add authentication
 
-- [] Create admin dashboard for managing websites and displaying traffic data
+- [ ] Create admin dashboard for managing websites and displaying traffic data
 
 
 # Database design
@@ -51,6 +51,7 @@ Website table is used to store website urls that you want analytics for.
     (id serial primary key,
     short_url varchar(8) UNIQUE,
     owner integer references users(id) on delete cascade,
+    name varchar(40),
     active boolean,
     website_url text);
 
