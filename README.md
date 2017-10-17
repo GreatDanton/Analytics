@@ -10,11 +10,27 @@ Note: Do not use this software on critical high traffic site as your
 database will probably melt and the software will most likely change
 a lot in the future.
 
+# Screenshots
+
+## Analytics page
+![charts example](/images/charts.png)
+
+## Dashboard
+![dashboard](/images/dashboard.png)
+
+## Edit existing website
+![edit website](/images/editWebsite.png)
+
 # TODO
 
 - [x] Add authentication
 
-- [ ] Create admin dashboard for managing websites and displaying traffic data
+- [x] Create admin dashboard for managing websites and displaying traffic data
+
+- [ ] Browser version logging
+
+- [ ] Most clicked content
+
 
 
 # Database design
