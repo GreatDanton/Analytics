@@ -28,7 +28,15 @@
             <label for="url">Url:</label>
             <input id="url" type="text" name="url" value="{{.URL}}" />
             <label class="error-message">{{.ErrorURL}}</label>
-
+            <!-- Allow changing shortURL in edit window -->
+            {{if eq .Type "Edit"}}
+            <br/>
+            <br/>
+            <label for="shortURL">shortURL:</label>
+            <input id="shortURL" type="text" name="shortURL" value="{{.ShortURL}}" />
+            <label class="error-message">{{.ErrorShortURL}}</label>
+            {{end}}
+            <!-- -->
             {{if eq .Type "Edit"}}
             <button class="btn-submit" type="submit">Edit Website</button>
             {{else}}

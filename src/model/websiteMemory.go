@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/greatdanton/analytics/src/global"
 )
@@ -84,7 +85,39 @@ func createRandomShortURL() (string, error) {
 }
 
 // AddWebsiteToMemory adds website parameters to memory
-func AddWebsiteToMemory(shortURL string, id string, websiteURL string) {
+func AddWebsiteToMemory(shortURL string, id string, websiteURL string) error {
+	exist := siteURLExistInMemory(shortURL)
+	if exist {
+		return fmt.Errorf("This shortURL already exists in memory")
+	}
+	var mu sync.Mutex
 	w := global.Websites
+	mu.Lock()
 	w[shortURL] = global.Website{ID: id, WebsiteURL: websiteURL}
+	mu.Unlock()
+	return nil
+}
+
+// EditWebsiteInMemory deletes oldShortURL key and inserts a new one with new data
+func EditWebsiteInMemory(oldShortURL string, newShortURL string, id string, websiteURL string) error {
+	exist := siteURLExistInMemory(oldShortURL)
+	if !exist {
+		return fmt.Errorf("EditWebsiteInMemory: old url: %v does not exist", oldShortURL)
+	}
+	DeleteWebsiteInMemory(oldShortURL)
+	err := AddWebsiteToMemory(newShortURL, id, websiteURL)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteWebsiteInMemory deletes website that is present in memory
+// in global websites variable
+func DeleteWebsiteInMemory(shortURL string) {
+	var mu sync.Mutex
+	w := global.Websites
+	mu.Lock()
+	delete(w, shortURL)
+	mu.Unlock()
 }

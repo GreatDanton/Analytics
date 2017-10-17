@@ -111,7 +111,8 @@ func EditWebsite(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
-		msg := addWebsiteMsg{Name: website.Name, URL: website.URL, Type: "Edit"}
+		msg := addWebsiteMsg{Name: website.Name, URL: website.URL,
+			Type: "Edit", ShortURL: website.ShortURL}
 		renderAddWebsite(w, r, msg)
 	case "POST":
 		user := sessions.LoggedInUser(r)
@@ -137,15 +138,44 @@ func EditWebsite(w http.ResponseWriter, r *http.Request) {
 
 		name := r.Form["name"][0]
 		url := r.Form["url"][0]
+		newShortURL := r.Form["shortURL"][0]
+		msg := addWebsiteMsg{Name: name, URL: url, ShortURL: newShortURL, Type: "Edit"}
+
+		if len(newShortURL) > 8 {
+			msg.ErrorShortURL = "Short URL should be max 8 characters long"
+			renderAddWebsite(w, r, msg)
+			return
+		}
 
 		// TODO: error check if logged in user is really owner of this url
 
-		err = model.EditWebsite(user.ID, website.ID, name, url)
+		exist, err := model.WebsiteShortURLExist(newShortURL)
+		if err != nil {
+			fmt.Println("WebsiteShortURLExist:", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		if exist {
+			msg.ErrorShortURL = "This short url already exist in db, please pick another one"
+			renderAddWebsite(w, r, msg)
+			return
+		}
+
+		err = model.EditWebsite(user.ID, website.ID, name, url, newShortURL)
 		if err != nil {
 			fmt.Println("Edit Website:", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
+
+		err = model.EditWebsiteInMemory(website.ShortURL, newShortURL, website.ID, url)
+		if err != nil {
+			fmt.Println("EditWebsite handler error:", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
 		// successfully updated, redirect to dashboard
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 	}
@@ -174,6 +204,9 @@ func DeleteWebsite(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+
+	model.DeleteWebsiteInMemory(website.ShortURL)
+
 	// successful delete
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }

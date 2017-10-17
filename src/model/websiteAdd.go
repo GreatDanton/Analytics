@@ -45,19 +45,46 @@ func TrackNewWebsite(userID string, websiteName string, websiteURL string) error
 	}
 	// website is added into database
 	// add website into memory
-	AddWebsiteToMemory(shortURL, id, websiteURL)
+	err = AddWebsiteToMemory(shortURL, id, websiteURL)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-// TODO: both edit and delete should edit, remove website from
-// in memory database
+// WebsiteShortURLExist checks if shortURL exist in database
+func WebsiteShortURLExist(shortURL string) (bool, error) {
+	var id string
+	err := global.DB.QueryRow(`SELECT id from website
+							   where short_url = $1`, shortURL).Scan(&id)
+
+	if err != nil {
+		// shortURL does not exist => we can add it to db in outer function
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return true, err
+	}
+	return true, err
+}
 
 // EditWebsite handles updating website row
-func EditWebsite(userID string, websiteID string, websiteName string, websiteURL string) error {
-	_, err := global.DB.Exec(`UPDATE website
-							 SET name = $1, website_url = $2
-							 where owner = $3
-							 and id = $4`, websiteName, websiteURL, userID, websiteID)
+func EditWebsite(userID string, websiteID string, websiteName string, websiteURL string, newShortURL string) error {
+
+	exist, err := WebsiteShortURLExist(newShortURL)
+	if err != nil {
+		return err
+	}
+	// if shortUrlExist do return error
+	if exist {
+		return fmt.Errorf("EditWebsite error: WebsiteShortURLExist: %v", exist)
+	}
+	//  shortURL does not exist we can update the database
+
+	_, err = global.DB.Exec(`UPDATE website
+							 SET name = $1, website_url = $2, short_url = $3
+							 where owner = $4
+							 and id = $5`, websiteName, websiteURL, newShortURL, userID, websiteID)
 	if err != nil {
 		return err
 	}
