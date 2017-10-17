@@ -18,14 +18,14 @@ type Website struct {
 // WebsiteTraffic is used to parse dailyLands and number of lands
 // from the chosen timeframe
 type WebsiteTraffic struct {
-	NumOfLands string      // displays whole number of lands in timeframe
+	NumOfLands int64       // displays whole number of lands in timeframe
 	Lands      []DailyLand // all lands fetched by day
 }
 
 // DailyLand holds traffic data for chosen day
 type DailyLand struct {
-	Date       int64  // which day lands occur
-	LandNumber string // number of lands that day
+	Date       int64 // which day lands occur
+	LandNumber int64 // number of lands that day
 }
 
 // GetWebsiteLands returns number of lands in the chosen timeframe (timeBeginsWith)
@@ -50,7 +50,7 @@ func GetWebsiteLands(websiteID string, timeStart time.Time, timeEnd time.Time) (
 
 	var (
 		date string
-		num  string
+		num  int64
 	)
 
 	dbtime := utilities.DBtime{}
@@ -79,14 +79,14 @@ func GetWebsiteLands(websiteID string, timeStart time.Time, timeEnd time.Time) (
 
 // WebsiteClicks is used to hold clicks data
 type WebsiteClicks struct {
-	NumOfClicks string
+	NumOfClicks int64
 	Clicks      []DailyClicks
 }
 
 // DailyClicks holds clicks per day data
 type DailyClicks struct {
 	Date      int64
-	ClicksNum string
+	ClicksNum int64
 }
 
 // GetNumOfClicks returns number of clicks in the given timeframe for chosen websiteID
@@ -106,7 +106,7 @@ func GetNumOfClicks(websiteID string, timeStart time.Time, timeEnd time.Time) (W
 
 	var (
 		date string
-		num  string
+		num  int64
 	)
 
 	dbtime := utilities.DBtime{}

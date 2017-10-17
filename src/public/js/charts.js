@@ -11,7 +11,8 @@ function CreateChart(canvasElement, ChartData) {
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgb(54, 162, 235)',
                 pointBorderWidth: 0,
-                pointRadius: 0,
+                pointRadius: 3,
+                pointBackgroundColor: 'rgb(54, 162, 235)',
                 hitRadius: 10,
                 hoverRadius: 10,
                 pointHoverBackgroundColor: 'rgb(54, 162, 235)',
@@ -22,22 +23,29 @@ function CreateChart(canvasElement, ChartData) {
             legend: {
                 display: false
             },
-            animation: false,
+            elements: {
+                line: {
+                    tension: 0 // disable smoothing => straight lines
+                }
+            },
             scales: {
                 xAxes: [{
                     type: 'time',
-                    unit: '',
+                    ticks: {
+                        autoSkip: true,
+                    },
                     time: {
+                        unit: 'day',
                         displayFormats: {
-                            'millisecond': 'YYYY-MM-DD',
-                            'second': 'YYYY-MM-DD',
-                            'minute': 'YYYY-MM-DD',
-                            'hour': 'YYYY-MM-DD',
-                            'day': 'YYYY-MM-DD',
-                            'week': 'YYYY-MM-DD',
-                            'month': 'YYYY-MM-DD',
-                            'quarter': 'YYYY-MM-DD',
-                            'year': 'YYYY-MM-DD'
+                            'millisecond': 'MM-DD',
+                            'second': 'MM-DD',
+                            'minute': 'MM-DD',
+                            'hour': 'MM-DD',
+                            'day': 'MM-DD',
+                            'week': 'MM-DD',
+                            'month': 'MM-DD',
+                            'quarter': 'MM-DD',
+                            'year': 'MM-DD'
                         },
                         tooltipFormat: "YYYY-MM-DD",
                     },
