@@ -103,6 +103,12 @@ body {
     box-shadow: $box-shadow-card;
 }
 
+@media screen and (max-width: 500px) {
+    .main-container {
+        padding: 40px 10px
+    }
+}
+
 
 .cards-container {
     display: flex;

@@ -114,6 +114,8 @@ func EditWebsite(w http.ResponseWriter, r *http.Request) {
 		msg := addWebsiteMsg{Name: website.Name, URL: website.URL,
 			Type: "Edit", ShortURL: website.ShortURL}
 		renderAddWebsite(w, r, msg)
+
+	// for post request on /website/id/edit page
 	case "POST":
 		user := sessions.LoggedInUser(r)
 		id := strings.Split(r.RequestURI, "/")[2] // grab website id

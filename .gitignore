@@ -4,3 +4,4 @@ pushToServer.sh
 deploy.sh
 prepros-6.config
 images/original
+public/css/main_min.css
