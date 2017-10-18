@@ -15,6 +15,8 @@ type Website struct {
 	ShortURL string // website short url (identifier for collecting data)
 }
 
+// GO OOP test
+
 // WebsiteTraffic is used to parse dailyLands and number of lands
 // from the chosen timeframe
 type WebsiteTraffic struct {
@@ -28,52 +30,47 @@ type DailyLand struct {
 	LandNumber int64 // number of lands that day
 }
 
-// GetWebsiteLands returns number of lands in the chosen timeframe (timeBeginsWith)
-func GetWebsiteLands(websiteID string, timeStart time.Time, timeEnd time.Time) (WebsiteTraffic, error) {
+// GetLands returns number of lands for each day between the timeFrame
+func (w *Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) {
+	// get start and end time in correct db format for times ('2006-10-01 15:20:10')
+	start := utilities.FormatTime(startTime)
+	end := utilities.FormatTime(endTime)
 	traffic := WebsiteTraffic{}
-	// returns: day | count
-	// 2017-15-03  | 5
-
-	tStart := timeStart.Format("2006-01-02")      // yyyy-mm-dd
-	tEnd := timeEnd.Format("2006-01-02 15:04:05") // yyyy-mm-dd hh:mm:ss
 
 	rows, err := global.DB.Query(`SELECT to_char(date_trunc('day', time), 'YYYY-MM-DD') as day, count(*) as lands
-								  FROM land
-								  WHERE website_id = $1
-								  AND time >= $2
-								  AND time <= $3
-								  GROUP BY day`, websiteID, tStart, tEnd)
+								FROM land
+								WHERE website_id = $1
+								AND time >= $2
+								AND time <= $3
+								GROUP BY day`, w.ID, start, end)
 	defer rows.Close()
 	if err != nil {
-		return traffic, err
+		return traffic, nil
 	}
 
 	var (
-		date string
-		num  int64
+		date  string
+		count int64
 	)
-
-	dbtime := utilities.DBtime{}
 	for rows.Next() {
-		err = rows.Scan(&date, &num)
+		err := rows.Scan(&date, &count)
+		if err != nil {
+			return traffic, err
+		}
+		ms, err := utilities.ToMiliSecond(date)
 		if err != nil {
 			return traffic, err
 		}
 
-		ms, err := dbtime.ToMiliSecond(date)
-		if err != nil {
-			return traffic, err
-		}
-		daily := DailyLand{Date: ms, LandNumber: num}
-		traffic.Lands = append(traffic.Lands, daily)
-		traffic.NumOfLands += num
+		day := DailyLand{Date: ms, LandNumber: count}
+		traffic.Lands = append(traffic.Lands, day)
+		traffic.NumOfLands += count
 	}
 	err = rows.Err()
 	if err != nil {
 		return traffic, err
 	}
-
-	// everything is allright return traffic data
+	// everything is allright return traffic type
 	return traffic, nil
 }
 
@@ -89,40 +86,39 @@ type DailyClicks struct {
 	ClicksNum int64
 }
 
-// GetNumOfClicks returns number of clicks in the given timeframe for chosen websiteID
-func GetNumOfClicks(websiteID string, timeStart time.Time, timeEnd time.Time) (WebsiteClicks, error) {
-	timeS := timeStart.Format("2006-01-02")
-	timeE := timeEnd.Format("2006-01-02 15:04:05")
+// GetClicks returns number of clicks in the given timeframe
+func (w *Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) {
+	start := utilities.FormatTime(timeStart)
+	end := utilities.FormatTime(timeEnd)
+
 	clicks := WebsiteClicks{}
 	rows, err := global.DB.Query(`SELECT to_char(date_trunc('day', time), 'YYYY-MM-DD') as day, count(*) as num from click
 								 WHERE website_id = $1
 								 AND time >= $2
 								 AND time <= $3
-								 GROUP BY day`, websiteID, timeS, timeE)
+								 GROUP BY day`, w.ID, start, end)
 	defer rows.Close()
 	if err != nil {
 		return clicks, err
 	}
 
 	var (
-		date string
-		num  int64
+		date  string
+		count int64
 	)
 
-	dbtime := utilities.DBtime{}
 	for rows.Next() {
-		err = rows.Scan(&date, &num)
+		err = rows.Scan(&date, &count)
 		if err != nil {
 			return clicks, err
 		}
 
-		ms, err := dbtime.ToMiliSecond(date)
+		ms, err := utilities.ToMiliSecond(date)
 		if err != nil {
 			return clicks, err
 		}
-
-		clicks.Clicks = append(clicks.Clicks, DailyClicks{Date: ms, ClicksNum: num})
-		clicks.NumOfClicks += num
+		clicks.Clicks = append(clicks.Clicks, DailyClicks{Date: ms, ClicksNum: count})
+		clicks.NumOfClicks += count
 	}
 	err = rows.Err()
 	if err != nil {

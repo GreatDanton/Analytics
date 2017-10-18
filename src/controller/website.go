@@ -53,13 +53,12 @@ func WebsiteTraffic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := model.GetWebsiteLands(website.ID, timeStart, timeEnd)
+	t, err := website.GetLands(timeStart, timeEnd)
 	if err != nil {
-		fmt.Println("GetWebsiteLands error:", err)
+		fmt.Println("Website.GetLands error:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	details.Website = website
 
 	b, err := json.Marshal(t)
 	if err != nil {
@@ -69,7 +68,7 @@ func WebsiteTraffic(w http.ResponseWriter, r *http.Request) {
 	}
 	details.Traffic = string(b)
 
-	clicks, err := model.GetNumOfClicks(website.ID, timeStart, timeEnd)
+	clicks, err := website.GetClicks(timeStart, timeEnd)
 	if err != nil {
 		fmt.Println("GetNumOfClicks error:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
