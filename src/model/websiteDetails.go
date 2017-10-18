@@ -17,7 +17,24 @@ type Website struct {
 	ShortURL string // website short url (identifier for collecting data)
 }
 
-// GO OOP test
+// GetWebsiteDetail returns website data for website
+// with name = website name and owner = userID
+func GetWebsiteDetail(websiteID, userID string) (Website, error) {
+	var (
+		id         string
+		websiteURL string
+		shortURL   string
+		name       string
+	)
+	err := global.DB.QueryRow(`SELECT id, name, website_url, short_url from website
+								WHERE owner = $1
+								and id = $2`, userID, websiteID).Scan(&id, &name, &websiteURL, &shortURL)
+	if err != nil {
+		return Website{}, err
+	}
+	website := Website{ID: id, Name: name, URL: websiteURL, ShortURL: shortURL}
+	return website, nil
+}
 
 // WebsiteTraffic is used to parse dailyLands and number of lands
 // from the chosen timeframe
@@ -35,8 +52,7 @@ type DailyLand struct {
 // GetLands returns number of lands for each day between the timeFrame
 func (w *Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) {
 	// get start and end time in correct db format for times ('2006-10-01 15:20:10')
-	start := utilities.FormatTime(startTime)
-	end := utilities.FormatTime(endTime)
+	start, end := utilities.FormatTimeFrame(startTime, endTime)
 	traffic := WebsiteTraffic{}
 
 	rows, err := global.DB.Query(`SELECT to_char(date_trunc('day', time), 'YYYY-MM-DD') as day, count(*) as lands
@@ -78,14 +94,14 @@ func (w *Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error)
 
 // WebsiteClicks is used to hold clicks data
 type WebsiteClicks struct {
-	NumOfClicks int64
+	NumOfClicks int64 // all clicks counted
 	Clicks      []DailyClicks
 }
 
 // DailyClicks holds clicks per day data
 type DailyClicks struct {
-	Date      int64
-	ClicksNum int64
+	Date      int64 // unix time in miliseconds
+	ClicksNum int64 // number of clicks for each day
 }
 
 // GetLandsJSON returns lands traffic in json string
@@ -103,8 +119,7 @@ func (w *Website) GetLandsJSON(timeStart, timeEnd time.Time) (string, error) {
 
 // GetClicks returns number of clicks in the given timeframe
 func (w *Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) {
-	start := utilities.FormatTime(timeStart)
-	end := utilities.FormatTime(timeEnd)
+	start, end := utilities.FormatTimeFrame(timeStart, timeEnd)
 
 	clicks := WebsiteClicks{}
 	rows, err := global.DB.Query(`SELECT to_char(date_trunc('day', time), 'YYYY-MM-DD') as day, count(*) as num from click
@@ -157,21 +172,46 @@ func (w *Website) GetClicksJSON(timeStart, timeEnd time.Time) (string, error) {
 	return string(bytes), nil
 }
 
-// GetWebsiteDetail returns website data for website
-// with name = website name and owner = userID
-func GetWebsiteDetail(websiteID, userID string) (Website, error) {
-	var (
-		id         string
-		websiteURL string
-		shortURL   string
-		name       string
-	)
-	err := global.DB.QueryRow(`SELECT id, name, website_url, short_url from website
-								WHERE owner = $1
-								and id = $2`, userID, websiteID).Scan(&id, &name, &websiteURL, &shortURL)
+// Visitor struct for holding data about visitors that are clicking
+// on our tracked websites
+type Visitor struct {
+	Country   string // to be implemented with microservice
+	IP        string
+	LastVisit int64  // last day when the visitor was present
+	Amount    string // How many times the same visitor visited in past timeframe
+}
+
+// LastVisitors returns last amount of visitors
+func (w *Website) LastVisitors(timeStart, timeEnd time.Time, amount int) ([]Visitor, error) {
+	v := []Visitor{}
+	start, end := utilities.FormatTimeFrame(timeStart, timeEnd)
+
+	rows, err := global.DB.Query(`SELECT ip, count(*) as visitedNum from land
+								WHERE time >= $1
+								AND time <= $2
+								GROUP BY ip`, start, end)
+	fmt.Println(amount)
 	if err != nil {
-		return Website{}, err
+		return v, err
 	}
-	website := Website{ID: id, Name: name, URL: websiteURL, ShortURL: shortURL}
-	return website, nil
+	var (
+		ip         string
+		visitedNum string
+	)
+	for rows.Next() {
+		err := rows.Scan(&ip, &visitedNum)
+		if err != nil {
+			return v, err
+		}
+		// Country to be implemented -> via separate app?
+		// browserID to be implemented
+		visitor := Visitor{IP: ip, Amount: visitedNum}
+		v = append(v, visitor)
+	}
+	err = rows.Err()
+	if err != nil {
+		return v, err
+	}
+	fmt.Println(v)
+	return v, nil
 }

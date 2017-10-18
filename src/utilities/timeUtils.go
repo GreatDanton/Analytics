@@ -6,9 +6,33 @@ import (
 )
 
 // FormatTime formats time.Time into database time format
-func FormatTime(date time.Time) string {
+func formatTime(date time.Time) string {
 	// turn time.Time into yyyy-mm-dd hh:mm:ss
 	return date.Format("2006-01-02 15:04:05")
+}
+
+// FormatTimeFrame returns starting, ending time formatted
+// in db format
+func FormatTimeFrame(start, end time.Time) (string, string) {
+	s := formatTime(start)
+	e := formatTime(end)
+	return s, e
+}
+
+// FormatTimeMany returns array of strings of time arguments
+// formatted for db timeframe usage
+func FormatTimeMany(args ...interface{}) ([]string, error) {
+	timeArr := make([]string, 0, len(args))
+	for _, v := range args {
+		// type asertion
+		t, ok := v.(time.Time)
+		if !ok {
+			err := fmt.Errorf("FormatTimeMany: provided argument %v is not type of time.Time", v)
+			return timeArr, err
+		}
+		timeArr = append(timeArr, formatTime(t))
+	}
+	return timeArr, nil
 }
 
 // ToMiliSecond returns date from databse(2006-01-02)

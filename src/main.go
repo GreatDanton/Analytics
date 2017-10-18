@@ -49,9 +49,10 @@ func main() {
 	r.HandleFunc("/logout", controller.Logout)
 	r.HandleFunc("/dashboard", loggedInUser(controller.Dashboard))
 	r.HandleFunc("/dashboard/new", loggedInUser(controller.AddWebsite))
-	r.HandleFunc("/website/:name", loggedInUser(controller.WebsiteTraffic))
-	r.HandleFunc("/website/:name/edit", loggedInUser(controller.EditWebsite))
-	r.HandleFunc("/website/:name/delete", loggedInUser(controller.DeleteWebsite))
+	r.HandleFunc("/website/:id", loggedInUser(controller.WebsiteTraffic))
+	r.HandleFunc("/website/:id/edit", loggedInUser(controller.EditWebsite))
+	r.HandleFunc("/website/:id/delete", loggedInUser(controller.DeleteWebsite))
+	r.HandleFunc("/website/:id/visitors"), loggedInUser(controller.WebsiteVisitors))
 
 	// server public files
 	r.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
@@ -82,5 +83,34 @@ func loggedInUser(next http.HandlerFunc) http.HandlerFunc {
 		}
 		// user is logged in: continue with request
 		next.ServeHTTP(w, r)
+	})
+}
+
+
+func websiteOwner(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := sessions.LoggedInUser(r)
+		// check if user is logged in
+		if !user.LoggedIn {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		// check if user is owner of the website
+		websiteID := strings.Split(r.RequestURI, "/")[2]
+		website, err := model.GetWebsiteDetail(websiteID, user.ID)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				fmt.Println("Logged in user is not the owner of the website")
+				http.Redirect(w, r, "/403", http.StatusForbidden)
+				return
+			}
+			fmt.Println("websiteOwner error:", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		// everything is okay, pass website and user forward
+		// user is logged in: continue with request
+		next.ServeHTTP(w, r, user, website)
 	})
 }

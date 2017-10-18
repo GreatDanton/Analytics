@@ -41,11 +41,11 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 
 type addWebsiteMsg struct {
 	Type          string // type of template render: edit or add
-	Name          string
-	URL           string
-	ShortURL      string
-	ErrorURL      string
-	ErrorShortURL string
+	Name          string // name of the website
+	URL           string // url
+	ShortURL      string // short url of the website
+	ErrorURL      string // error message for url
+	ErrorShortURL string // error message for shortURL
 	LoggedIn      sessions.User
 }
 
