@@ -2,11 +2,13 @@
   margin: 0;
   padding: 0;
   -webkit-box-sizing: border-box;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  font-family: "Fira Sans", sans-serif; }
 
 body {
   background-color: #f5f5f5;
-  color: #313131; }
+  color: #313131;
+  font-family: "Fira Sans", sans-serif; }
 
 .navbar {
   display: -webkit-box;
@@ -134,7 +136,7 @@ body {
   margin-bottom: 20px; }
 
 input[type="text"], input[type="password"], input[type="email"], textarea {
-  font-family: "Fira Sans, Arial", sans-serif;
+  font-family: "Fira Sans", sans-serif;
   font-size: 14px;
   color: #313131;
   border: 1px solid #c2c0c2;
@@ -157,7 +159,7 @@ input[type="email"]:focus, textarea:focus {
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); }
 
 label {
-  font-family: "Fira Sans, Arial", sans-serif;
+  font-family: "Fira Sans", sans-serif;
   font-size: 14px;
   color: #313131; }
 
@@ -179,7 +181,7 @@ button {
   -webkit-transition: all 0.2s linear;
   -o-transition: all 0.2s linear;
   transition: all 0.2s linear;
-  font-family: "Fira Sans, Arial", sans-serif;
+  font-family: "Fira Sans", sans-serif;
   font-size: 14px; }
 
 button:hover {
@@ -197,7 +199,7 @@ button:hover {
   -webkit-transition: all 0.2s linear;
   -o-transition: all 0.2s linear;
   transition: all 0.2s linear;
-  font-family: "Fira Sans, Arial", sans-serif;
+  font-family: "Fira Sans", sans-serif;
   font-size: 14px;
   color: #313131;
   text-decoration: none; }
@@ -223,7 +225,7 @@ button:hover {
   -o-transition: all 0.2s linear;
   transition: all 0.2s linear;
   border-radius: 3px;
-  font-family: "Fira Sans, Arial", sans-serif;
+  font-family: "Fira Sans", sans-serif;
   font-size: 14px;
   width: 100%;
   cursor: pointer;
@@ -246,7 +248,7 @@ button:hover {
   margin-top: 40px; }
 
 table {
-  font-family: "Fira Sans, Arial", sans-serif;
+  font-family: "Fira Sans", sans-serif;
   font-size: 12px;
   width: 480px;
   max-width: 100%;
