@@ -72,6 +72,10 @@ body {
   -webkit-box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); }
 
+@media screen and (max-width: 500px) {
+  .main-container {
+    padding: 40px 10px; } }
+
 .cards-container {
   display: -webkit-box;
   display: -webkit-flex;
@@ -113,11 +117,12 @@ body {
   margin-bottom: 20px; }
 
 .card-small {
-  width: 150px;
+  max-width: 100%;
+  min-width: 150px;
   text-align: center;
   border: 1px solid #c2c0c2;
   margin: 10px;
-  padding: 10px 0; }
+  padding: 10px 20px; }
 
 .error-message {
   color: #cf1f1f; }
@@ -127,10 +132,6 @@ body {
 
 .chart-title {
   margin-bottom: 20px; }
-
-@media screen and (max-width: 500px) {
-  .main-container {
-    padding: 40px 10px; } }
 
 input[type="text"], input[type="password"], input[type="email"], textarea {
   font-family: "Fira Sans, Arial", sans-serif;
@@ -243,3 +244,26 @@ button:hover {
 
 .margin-t-40 {
   margin-top: 40px; }
+
+table {
+  font-family: "Fira Sans, Arial", sans-serif;
+  font-size: 12px;
+  width: 480px;
+  max-width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  margin: 45px auto; }
+
+table th {
+  font-size: 14px;
+  font-weight: bold;
+  padding: 12px 15px;
+  color: #313131; }
+
+table td {
+  padding: 10px 15px;
+  color: #313131;
+  border-top: 1px solid #e8edff; }
+
+table tr:hover td {
+  background: #eff2ff; }

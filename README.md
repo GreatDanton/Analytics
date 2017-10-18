@@ -15,6 +15,9 @@ a lot in the future.
 ## Analytics page
 ![charts example](/images/charts.png)
 
+## Visitors analytics page
+![visitors example](/images/visitors.png)
+
 ## Dashboard
 ![dashboard](/images/dashboard.png)
 
@@ -27,10 +30,9 @@ a lot in the future.
 
 - [x] Create admin dashboard for managing websites and displaying traffic data
 
-- [ ] Browser version logging
+- [x] Most clicked urls
 
-- [ ] Most clicked content
-
+- [ ] Implement Browser versions logging
 
 
 # Database design

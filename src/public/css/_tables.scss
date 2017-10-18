@@ -1,0 +1,26 @@
+table {
+	font-family: $font-family-p;
+	font-size: 12px;
+    width: 480px;
+    max-width: 100%;
+	text-align: left;
+    border-collapse: collapse;
+    margin: 45px auto;
+}
+
+table th {
+	font-size: 14px;
+	font-weight: bold;
+	padding: 12px 15px;
+	color: $color-text;
+}
+
+table td {
+	padding: 10px 15px;
+	color: $color-text;
+	border-top: 1px solid #e8edff;
+}
+
+table tr:hover td {
+	background: #eff2ff;
+}

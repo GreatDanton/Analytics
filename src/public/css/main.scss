@@ -140,11 +140,12 @@ body {
 }
 
 .card-small {
-    width: 150px;
+    max-width: 100%;
+    min-width: 150px;
     text-align: center;
     border: $border-inactive;
     margin: 10px;
-    padding: 10px 0;
+    padding: 10px 20px;
 }
 
 .error-message {
@@ -167,3 +168,6 @@ body {
 
 // import utilites
 @import "_utils";
+
+// import table styles
+@import "_tables"
