@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 <head>
-    <title>Traffic</title>
+    <title>{{.Website.Name}} Traffic</title>
     {{template "styles"}}
 </head>
 
@@ -10,8 +10,7 @@
     {{template "navbar" .}}
     <div class="main-container">
         <h1 class="card-title">{{.Website.Name}}</h1>
-        <a class="btn" href="/website/{{.Website.ID}}/edit">Edit</a>
-        <a class="btn" href="/website/{{.Website.ID}}/delete">Delete</a>
+        {{template "website-actionBtns" .}}
 
         <div class="margin-t-40"></div>
 

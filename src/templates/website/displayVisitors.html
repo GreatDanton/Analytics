@@ -1,0 +1,70 @@
+{{define "displayVisitors"}}
+<!DOCTYPE html>
+
+<head>
+    <title>{{.Website.Name}} Visitors</title>
+    {{template "styles"}}
+</head>
+
+<body>
+    {{template "navbar" .}}
+
+    <div class="main-container">
+        <h2 class="card-title">{{.Website.Name}} Visitors</h2>
+        {{template "website-actionBtns" .}}
+
+        <div class="margin-t-40"></div>
+        <div class="cards-container">
+            <div class="card-small">
+                <h3 class="card-title">Most Clicked</h3>
+                <h3>{{.MostClicked.MostClickedURL}}</h3>
+            </div>
+
+            <div class="card-small">
+                <h3 class="card-title">Top Visitor</h3>
+                <h3>{{.TopVisitors.TopVisitor}}</h3>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Visitor</th>
+                    <th>Clicks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $i, $e := .TopVisitors.Visitors}}
+                <tr>
+                    <td>{{ $e.IP }}</td>
+                    <td>{{ $e.Amount }}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>URL</th>
+                    <th>Clicks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $i, $e := .MostClicked.Clicks}}
+                <tr>
+                    <td>{{ $e.URL }}</td>
+                    <td>{{ $e.ClicksNum }}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+
+
+
+    </div>
+</body>
+
+</html>
+
+{{end}}

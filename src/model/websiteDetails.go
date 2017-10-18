@@ -50,7 +50,7 @@ type DailyLand struct {
 }
 
 // GetLands returns number of lands for each day between the timeFrame
-func (w *Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) {
+func (w Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) {
 	// get start and end time in correct db format for times ('2006-10-01 15:20:10')
 	start, end := utilities.FormatTimeFrame(startTime, endTime)
 	traffic := WebsiteTraffic{}
@@ -60,7 +60,8 @@ func (w *Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error)
 								WHERE website_id = $1
 								AND time >= $2
 								AND time <= $3
-								GROUP BY day`, w.ID, start, end)
+								GROUP BY day
+								ORDER BY day`, w.ID, start, end)
 	defer rows.Close()
 	if err != nil {
 		return traffic, nil
@@ -79,7 +80,6 @@ func (w *Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error)
 		if err != nil {
 			return traffic, err
 		}
-
 		day := DailyLand{Date: ms, LandNumber: count}
 		traffic.Lands = append(traffic.Lands, day)
 		traffic.NumOfLands += count
@@ -118,7 +118,7 @@ func (w *Website) GetLandsJSON(timeStart, timeEnd time.Time) (string, error) {
 }
 
 // GetClicks returns number of clicks in the given timeframe
-func (w *Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) {
+func (w Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) {
 	start, end := utilities.FormatTimeFrame(timeStart, timeEnd)
 
 	clicks := WebsiteClicks{}
@@ -126,7 +126,8 @@ func (w *Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error)
 								 WHERE website_id = $1
 								 AND time >= $2
 								 AND time <= $3
-								 GROUP BY day`, w.ID, start, end)
+								 GROUP BY day
+								 ORDER BY day`, w.ID, start, end)
 	defer rows.Close()
 	if err != nil {
 		return clicks, err
@@ -160,7 +161,7 @@ func (w *Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error)
 
 // GetClicksJSON returns json string of clicks data from database in the
 // chosen timeframe
-func (w *Website) GetClicksJSON(timeStart, timeEnd time.Time) (string, error) {
+func (w Website) GetClicksJSON(timeStart, timeEnd time.Time) (string, error) {
 	clicksTraffic, err := w.GetClicks(timeStart, timeEnd)
 	if err != nil {
 		return "", fmt.Errorf("GetClicksJSON: GetClicks: %v", err)
@@ -170,46 +171,4 @@ func (w *Website) GetClicksJSON(timeStart, timeEnd time.Time) (string, error) {
 		return "", err
 	}
 	return string(bytes), nil
-}
-
-// Visitor struct for holding data about visitors that are clicking
-// on our tracked websites
-type Visitor struct {
-	Country   string // to be implemented with microservice
-	IP        string
-	LastVisit int64  // last day when the visitor was present
-	Amount    string // How many times the same visitor visited in past timeframe
-}
-
-// LastVisitors returns last amount of visitors
-func (w *Website) LastVisitors(timeStart, timeEnd time.Time, amount int) ([]Visitor, error) {
-	v := []Visitor{}
-	start, end := utilities.FormatTimeFrame(timeStart, timeEnd)
-
-	rows, err := global.DB.Query(`SELECT ip, count(*) as visitedNum from land
-								WHERE time >= $1
-								AND time <= $2
-								GROUP BY ip`, start, end)
-	if err != nil {
-		return v, err
-	}
-	var (
-		ip         string
-		visitedNum string
-	)
-	for rows.Next() {
-		err := rows.Scan(&ip, &visitedNum)
-		if err != nil {
-			return v, err
-		}
-		// Country to be implemented -> via separate app?
-		// browserID to be implemented
-		visitor := Visitor{IP: ip, Amount: visitedNum}
-		v = append(v, visitor)
-	}
-	err = rows.Err()
-	if err != nil {
-		return v, err
-	}
-	return v, nil
 }

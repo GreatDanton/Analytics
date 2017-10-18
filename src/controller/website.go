@@ -69,12 +69,6 @@ func WebsiteTraffic(w http.ResponseWriter, r *http.Request) {
 	}
 	details.Clicks = clicks
 
-	_, err = website.LastVisitors(timeStart, timeEnd, 10)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	err = templates.Execute(w, "displayTraffic", details)
 	if err != nil {
 		fmt.Println("Website: websiteTraffic:", err)

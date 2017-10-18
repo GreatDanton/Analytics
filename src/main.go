@@ -57,6 +57,7 @@ func main() {
 	r.HandleFunc("/website/:id", loggedInUser(controller.WebsiteTraffic))
 	r.HandleFunc("/website/:id/edit", loggedInUser(controller.EditWebsite))
 	r.HandleFunc("/website/:id/delete", loggedInUser(controller.DeleteWebsite))
+	r.HandleFunc("/website/:id/visitors", loggedInUser(controller.WebsiteVisitors))
 
 	// server public files
 	r.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
