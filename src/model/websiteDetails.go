@@ -1,6 +1,8 @@
 package model
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/greatdanton/analytics/src/global"
@@ -86,6 +88,19 @@ type DailyClicks struct {
 	ClicksNum int64
 }
 
+// GetLandsJSON returns lands traffic in json string
+func (w *Website) GetLandsJSON(timeStart, timeEnd time.Time) (string, error) {
+	landsTraffic, err := w.GetLands(timeStart, timeEnd)
+	if err != nil {
+		return "", fmt.Errorf("GetLandsJSON: GetLands: %v", err)
+	}
+	bytes, err := json.Marshal(landsTraffic)
+	if err != nil {
+		return "", fmt.Errorf("GetLandsJSON: cannot unmarshal type: %v", err)
+	}
+	return string(bytes), err
+}
+
 // GetClicks returns number of clicks in the given timeframe
 func (w *Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) {
 	start := utilities.FormatTime(timeStart)
@@ -128,10 +143,23 @@ func (w *Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error)
 	return clicks, nil
 }
 
+// GetClicksJSON returns json string of clicks data from database in the
+// chosen timeframe
+func (w *Website) GetClicksJSON(timeStart, timeEnd time.Time) (string, error) {
+	clicksTraffic, err := w.GetClicks(timeStart, timeEnd)
+	if err != nil {
+		return "", fmt.Errorf("GetClicksJSON: GetClicks: %v", err)
+	}
+	bytes, err := json.Marshal(clicksTraffic)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
+}
+
 // GetWebsiteDetail returns website data for website
 // with name = website name and owner = userID
 func GetWebsiteDetail(websiteID, userID string) (Website, error) {
-	website := Website{}
 	var (
 		id         string
 		websiteURL string
@@ -142,12 +170,8 @@ func GetWebsiteDetail(websiteID, userID string) (Website, error) {
 								WHERE owner = $1
 								and id = $2`, userID, websiteID).Scan(&id, &name, &websiteURL, &shortURL)
 	if err != nil {
-		return website, err
+		return Website{}, err
 	}
-
-	website.ID = id
-	website.Name = name
-	website.URL = websiteURL
-	website.ShortURL = shortURL
+	website := Website{ID: id, Name: name, URL: websiteURL, ShortURL: shortURL}
 	return website, nil
 }

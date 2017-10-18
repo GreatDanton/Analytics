@@ -2,7 +2,6 @@ package controller
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -53,34 +52,21 @@ func WebsiteTraffic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t, err := website.GetLands(timeStart, timeEnd)
+	lands, err := website.GetLandsJSON(timeStart, timeEnd)
 	if err != nil {
-		fmt.Println("Website.GetLands error:", err)
+		fmt.Println(err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+	details.Traffic = lands
 
-	b, err := json.Marshal(t)
+	clicks, err := website.GetClicksJSON(timeStart, timeEnd)
 	if err != nil {
-		fmt.Println("Cannot marshal:", err)
+		fmt.Println(err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	details.Traffic = string(b)
-
-	clicks, err := website.GetClicks(timeStart, timeEnd)
-	if err != nil {
-		fmt.Println("GetNumOfClicks error:", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	c, err := json.Marshal(clicks)
-	if err != nil {
-		fmt.Println("Cannot marshal:", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-	details.Clicks = string(c)
+	details.Clicks = clicks
 
 	err = templates.Execute(w, "displayTraffic", details)
 	if err != nil {
