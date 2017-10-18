@@ -17,15 +17,6 @@ var DB *sql.DB
 // false => do not display register page
 var RegisterAdmin bool
 
-// Website holds data about each website parsed from database
-type Website struct {
-	ID         string
-	WebsiteURL string
-}
-
-// Websites var holds data for each website in database
-var Websites map[string]Website
-
 // Templates is storing all template .html files
 var Templates *template.Template
 

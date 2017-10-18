@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/greatdanton/analytics/src/client"
-	"github.com/greatdanton/analytics/src/global"
+	"github.com/greatdanton/analytics/src/memory"
 	"github.com/greatdanton/analytics/src/model"
 )
 
@@ -32,9 +32,10 @@ func userLands(w http.ResponseWriter, r *http.Request) {
 	c := client.GetInfo(r)
 
 	request := c.Request
-	data, ok := global.Websites[request]
-	if !ok { // this key does not exist
-		fmt.Printf("This website shortURL %v does not exist in db: %v\n", request, ok)
+	// TODO: add function for accessing request?, clean this part
+	data, err := memory.Memory.HandleRequest(request)
+	if err != nil {
+		fmt.Printf("This website shortURL %v does not exist in memory\n", request)
 		return
 	}
 
@@ -44,7 +45,7 @@ func userLands(w http.ResponseWriter, r *http.Request) {
 
 	clientIP := c.IP
 	websiteID := data.ID
-	err := model.LogClientLand(clientIP, websiteID)
+	err = model.LogClientLand(clientIP, websiteID)
 	if err != nil {
 		fmt.Println("Error LogClientLand:", err)
 		return
@@ -56,9 +57,9 @@ func userClicks(w http.ResponseWriter, r *http.Request) {
 	c := client.GetInfo(r)
 
 	request := c.Request
-	data, ok := global.Websites[request]
-	if !ok {
-		fmt.Printf("This website shortURL %v does not exist in db: %v", request, ok)
+	data, err := memory.Memory.HandleRequest(request)
+	if err != nil {
+		fmt.Printf("This website shortURL %v does not exist in db\n", request)
 		return
 	}
 

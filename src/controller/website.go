@@ -51,6 +51,7 @@ func WebsiteTraffic(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+	details.Website = website
 
 	lands, err := website.GetLandsJSON(timeStart, timeEnd)
 	if err != nil {
@@ -85,7 +86,6 @@ func WebsiteTraffic(w http.ResponseWriter, r *http.Request) {
 // EditWebsite -> renders new website template filled with
 // existing data updates database
 func EditWebsite(w http.ResponseWriter, r *http.Request) {
-
 	switch r.Method {
 	case "GET":
 		user := sessions.LoggedInUser(r)
@@ -95,7 +95,7 @@ func EditWebsite(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			// if there are no rows in database user is not the owner
 			if err == sql.ErrNoRows {
-				http.Redirect(w, r, "/403", http.StatusForbidden)
+				http.Redirect(w, r, "/403", http.StatusSeeOther)
 				return
 			}
 			fmt.Println("EditWebsite: GetWebsiteDetail:", err)
@@ -132,6 +132,7 @@ func EditWebsite(w http.ResponseWriter, r *http.Request) {
 		name := r.Form["name"][0]
 		url := r.Form["url"][0]
 		newShortURL := r.Form["shortURL"][0]
+		newData := model.Website{Name: name, URL: url, ShortURL: newShortURL}
 		msg := addWebsiteMsg{Name: name, URL: url, ShortURL: newShortURL, Type: "Edit"}
 
 		if len(newShortURL) > 8 {
@@ -140,31 +141,14 @@ func EditWebsite(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// TODO: error check if logged in user is really owner of this url
-
-		exist, err := model.WebsiteShortURLExist(newShortURL)
+		err = model.EditWebsite(user.ID, website, newData)
 		if err != nil {
-			fmt.Println("WebsiteShortURLExist:", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		if exist {
-			msg.ErrorShortURL = "This short url already exist in db, please pick another one"
-			renderAddWebsite(w, r, msg)
-			return
-		}
-
-		err = model.EditWebsite(user.ID, website.ID, name, url, newShortURL)
-		if err != nil {
+			if err == model.ErrorShortURLExist {
+				msg.ErrorShortURL = "This short url already exist in db, please pick another one"
+				renderAddWebsite(w, r, msg)
+				return
+			}
 			fmt.Println("Edit Website:", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-
-		err = model.EditWebsiteInMemory(website.ShortURL, newShortURL, website.ID, url)
-		if err != nil {
-			fmt.Println("EditWebsite handler error:", err)
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
@@ -191,14 +175,12 @@ func DeleteWebsite(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = model.DeleteWebsite(user.ID, website.ID)
+	err = model.DeleteWebsite(user.ID, website)
 	if err != nil {
 		fmt.Println("DeleteWebsite:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-
-	model.DeleteWebsiteInMemory(website.ShortURL)
 
 	// successful delete
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)

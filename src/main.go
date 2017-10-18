@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/greatdanton/analytics/src/memory"
 	"github.com/greatdanton/analytics/src/sessions"
 
 	"github.com/go-zoo/bone"
@@ -36,11 +37,14 @@ func main() {
 	setup.HandleCmdFlags()
 
 	// load all websites data into memory, TODO: replace this function with REDIS db
-	global.Websites, err = model.LoadWebsitesToMemory()
+
+	m := memory.MemWebsites{}
+	err = m.LoadWebsites()
 	if err != nil {
-		log.Fatal("Cannot load websites to memory:", err)
+		log.Fatal(err)
 	}
-	fmt.Println("Websites in memory:", global.Websites)
+	memory.Memory = m
+	fmt.Println(m)
 
 	r.HandleFunc("/403", controller.Handle403)
 	// app handlers

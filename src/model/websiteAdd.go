@@ -2,9 +2,11 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/greatdanton/analytics/src/global"
+	"github.com/greatdanton/analytics/src/memory"
 )
 
 // WebsiteURLExist checks if url for this particular user
@@ -43,61 +45,56 @@ func TrackNewWebsite(userID string, websiteName string, websiteURL string) error
 	if err != nil {
 		return fmt.Errorf("TrackNewWebsite: error while inserting into website db: %v", err)
 	}
-	// website is added into database
-	// add website into memory
-	err = AddWebsiteToMemory(shortURL, id, websiteURL)
+	err = memory.Memory.AddWebsite(id, userID, shortURL, websiteURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("Memory.AddWebsite: error: %v", err)
 	}
 	return nil
 }
 
-// WebsiteShortURLExist checks if shortURL exist in database
-func WebsiteShortURLExist(shortURL string) (bool, error) {
-	var id string
-	err := global.DB.QueryRow(`SELECT id from website
-							   where short_url = $1`, shortURL).Scan(&id)
-
-	if err != nil {
-		// shortURL does not exist => we can add it to db in outer function
-		if err == sql.ErrNoRows {
-			return false, nil
-		}
-		return true, err
-	}
-	return true, err
-}
+//ErrorShortURLExist is used when the website with short url already exist in memory
+// (and therefore in database)
+var ErrorShortURLExist = errors.New("Website with this short url already exists")
 
 // EditWebsite handles updating website row
-func EditWebsite(userID string, websiteID string, websiteName string, websiteURL string, newShortURL string) error {
-
-	exist, err := WebsiteShortURLExist(newShortURL)
+func EditWebsite(userID string, oldWebsite, newWebsite Website) error {
+	exist := memory.Memory.ShortURLExist(newWebsite.ShortURL)
+	// if shortUrl exist in memory return error
+	owner, err := memory.Memory.GetOwner(newWebsite.ShortURL)
 	if err != nil {
 		return err
 	}
-	// if shortUrlExist do return error
-	if exist {
-		return fmt.Errorf("EditWebsite error: WebsiteShortURLExist: %v", exist)
+	// IF shortURL already exist and the owner of the website is not
+	// the same person trying to edit the website => return error
+	if exist && owner != userID {
+		return ErrorShortURLExist
 	}
 	//  shortURL does not exist we can update the database
-
 	_, err = global.DB.Exec(`UPDATE website
 							 SET name = $1, website_url = $2, short_url = $3
 							 where owner = $4
-							 and id = $5`, websiteName, websiteURL, newShortURL, userID, websiteID)
+							 and id = $5`, newWebsite.Name, newWebsite.URL, newWebsite.ShortURL, userID, oldWebsite.ID)
 	if err != nil {
 		return err
 	}
+
+	err = memory.Memory.EditWebsite(oldWebsite.ShortURL, newWebsite.ShortURL, newWebsite.URL)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // DeleteWebsite handles website deletion from the db
-func DeleteWebsite(userID string, websiteID string) error {
+func DeleteWebsite(userID string, website Website) error {
 	_, err := global.DB.Exec(`DELETE from website
 							  where owner = $1
-							  and id = $2`, userID, websiteID)
+							  and id = $2`, userID, website.ID)
 	if err != nil {
 		return err
 	}
+	// Delete website from memory
+	memory.Memory.DeleteWebsite(website.ShortURL)
 	return nil
 }

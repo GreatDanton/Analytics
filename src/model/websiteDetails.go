@@ -190,7 +190,6 @@ func (w *Website) LastVisitors(timeStart, timeEnd time.Time, amount int) ([]Visi
 								WHERE time >= $1
 								AND time <= $2
 								GROUP BY ip`, start, end)
-	fmt.Println(amount)
 	if err != nil {
 		return v, err
 	}
@@ -212,6 +211,5 @@ func (w *Website) LastVisitors(timeStart, timeEnd time.Time, amount int) ([]Visi
 	if err != nil {
 		return v, err
 	}
-	fmt.Println(v)
 	return v, nil
 }
