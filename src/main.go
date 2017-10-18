@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/greatdanton/analytics/src/sessions"
 
@@ -52,7 +53,6 @@ func main() {
 	r.HandleFunc("/website/:id", loggedInUser(controller.WebsiteTraffic))
 	r.HandleFunc("/website/:id/edit", loggedInUser(controller.EditWebsite))
 	r.HandleFunc("/website/:id/delete", loggedInUser(controller.DeleteWebsite))
-	r.HandleFunc("/website/:id/visitors"), loggedInUser(controller.WebsiteVisitors))
 
 	// server public files
 	r.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./public"))))
@@ -86,7 +86,6 @@ func loggedInUser(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
-
 func websiteOwner(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := sessions.LoggedInUser(r)
@@ -111,6 +110,7 @@ func websiteOwner(next http.HandlerFunc) http.HandlerFunc {
 		}
 		// everything is okay, pass website and user forward
 		// user is logged in: continue with request
-		next.ServeHTTP(w, r, user, website)
+		fmt.Println(website)
+		next.ServeHTTP(w, r)
 	})
 }
