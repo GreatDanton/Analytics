@@ -1,4 +1,8 @@
 {{define "website-actionBtns"}}
-<a class="btn" href="/website/{{.Website.ID}}/edit">Edit</a>
-<a class="btn" href="/website/{{.Website.ID}}/delete">Delete</a>
+<div class="row">
+    <a class="btn" href="/website/{{.Website.ID}}/visitors">Traffic Details</a>
+    <div class="spacer"></div>
+    <a class="btn" href="/website/{{.Website.ID}}/edit">Edit</a>
+    <a class="btn" href="/website/{{.Website.ID}}/delete">Delete</a>
+</div>
 {{end}}

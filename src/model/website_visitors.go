@@ -20,12 +20,12 @@ type Visitors struct {
 type Visitor struct {
 	Country   string // to be implemented with microservice
 	IP        string // visitor ip
-	LastVisit int64  // last day when the visitor was present
+	LastVisit string // last day when the visitor was present
 	Amount    string // How many times the same visitor visited in past timeframe
 }
 
-// LastVisitors returns last amount of visitors
-func (w Website) LastVisitors(timeStart, timeEnd time.Time, amount int) (Visitors, error) {
+// TopVisitors returns last amount of visitors
+func (w Website) TopVisitors(timeStart, timeEnd time.Time, amount int) (Visitors, error) {
 	v := Visitors{}
 	start, end := utilities.FormatTimeFrame(timeStart, timeEnd)
 
@@ -66,18 +66,58 @@ func (w Website) LastVisitors(timeStart, timeEnd time.Time, amount int) (Visitor
 	return v, nil
 }
 
-// LastVisitorsJSON returns data about last visitors in json format
-func (w Website) LastVisitorsJSON(timeStart, timeEnd time.Time, amount int) (string, error) {
-	data, err := w.LastVisitors(timeStart, timeEnd, amount)
+// TopVisitorsJSON returns data about last visitors in json format
+func (w Website) TopVisitorsJSON(timeStart, timeEnd time.Time, amount int) (string, error) {
+	data, err := w.TopVisitors(timeStart, timeEnd, amount)
 	if err != nil {
 		return "", err
 	}
 	bytes, err := json.Marshal(data)
 	if err != nil {
-		e := fmt.Errorf("LastVisitorsJSON: json.Marshal error: %v", err)
+		e := fmt.Errorf("TopVisitorsJSON: json.Marshal error: %v", err)
 		return "", e
 	}
 	return string(bytes), err
+}
+
+// LastVisitors returns last visitors that landed on your page with land
+// land number right next to them
+func (w Website) LastVisitors(timeStart, timeEnd time.Time, amount int) (Visitors, error) {
+	v := Visitors{}
+	start, end := utilities.FormatTimeFrame(timeStart, timeEnd)
+
+	rows, err := global.DB.Query(`SELECT ip, to_char(date_trunc('minute', MAX(time)), 'YYYY-MM-DD HH24:MI') as day,
+								count(*) as visitedNum from land
+								WHERE time >= $1
+								AND time <= $2
+								GROUP BY ip
+								ORDER BY MAX(time) desc
+								LIMIT $3`, start, end, amount)
+	defer rows.Close()
+	if err != nil {
+		return v, err
+	}
+
+	var (
+		ip         string
+		lastVisit  string
+		visitedNum string
+	)
+	for rows.Next() {
+		err := rows.Scan(&ip, &lastVisit, &visitedNum)
+		if err != nil {
+			return v, err
+		}
+
+		visitor := Visitor{IP: ip, LastVisit: lastVisit, Amount: visitedNum}
+		v.Visitors = append(v.Visitors, visitor)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return v, err
+	}
+	return v, nil
 }
 
 // MostClicked holds all clicks with most clicked url

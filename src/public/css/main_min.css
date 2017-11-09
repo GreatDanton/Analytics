@@ -177,6 +177,7 @@ button {
   border-radius: 3px;
   border: 1px solid #c2c0c2;
   padding: 0 10px;
+  margin: 0 5px;
   cursor: pointer;
   -webkit-transition: all 0.2s linear;
   -o-transition: all 0.2s linear;
@@ -195,6 +196,7 @@ button:hover {
   border-radius: 3px;
   border: 1px solid #c2c0c2;
   padding: 0 10px;
+  margin: 0 5px;
   cursor: pointer;
   -webkit-transition: all 0.2s linear;
   -o-transition: all 0.2s linear;
@@ -246,6 +248,22 @@ button:hover {
 
 .margin-t-40 {
   margin-top: 40px; }
+
+.row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%; }
+
+.spacer {
+  -webkit-box-flex: 2;
+  -webkit-flex-grow: 2;
+  -ms-flex-positive: 2;
+  flex-grow: 2; }
+
+.text-centered {
+  text-align: center; }
 
 table {
   font-family: "Fira Sans", sans-serif;

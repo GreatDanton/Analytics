@@ -11,6 +11,7 @@ button {
     border-radius: 3px;
     border: $border-inactive;
     padding: 0 10px;
+    margin: 0 5px;
     cursor: pointer;
     transition: $transition-default;
     font-family: $font-family-p;
@@ -29,6 +30,7 @@ button:hover {
     border-radius: 3px;
     border: $border-inactive;
     padding: 0 10px;
+    margin: 0 5px;
     cursor: pointer;
     transition: $transition-default;
     font-family: $font-family-p;

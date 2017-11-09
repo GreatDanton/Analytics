@@ -10,7 +10,7 @@
     {{template "navbar" .}}
 
     <div class="main-container">
-        <h2 class="card-title">{{.Website.Name}} Visitors</h2>
+        <h1 class="card-title">{{.Website.Name}}: Visitors</h1>
         {{template "website-actionBtns" .}}
 
         <div class="margin-t-40"></div>
@@ -28,11 +28,12 @@
             </div>
         </div>
 
+        <h2 class="text-centered">Top visitors</h2>
         <table>
             <thead>
                 <tr>
                     <th>Visitor</th>
-                    <th>Clicks</th>
+                    <th>Lands</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,6 +46,7 @@
             </tbody>
         </table>
 
+        <h2 class="text-centered">Most clicked content</h2>
         <table>
             <thead>
                 <tr>
@@ -63,6 +65,25 @@
         </table>
 
 
+        <h2 class="text-centered">Last visitors</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Visitor</th>
+                    <th>Lands</th>
+                    <th>Last Visit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $i, $e := .LastVisitors.Visitors}}
+                <tr>
+                    <td>{{ $e.IP }}</td>
+                    <td>{{ $e.Amount }}</td>
+                    <td>{{ $e.LastVisit}}</td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
 
     </div>
 </body>

@@ -12,10 +12,11 @@ import (
 )
 
 type displayVisitors struct {
-	Website     model.Website
-	TopVisitors model.Visitors
-	MostClicked model.MostClicked
-	LoggedIn    sessions.User
+	Website      model.Website
+	TopVisitors  model.Visitors // top visitors (highest numbers of lands)
+	LastVisitors model.Visitors // last visitors on that landed on your website
+	MostClicked  model.MostClicked
+	LoggedIn     sessions.User
 }
 
 // WebsiteVisitors displays analyzed visitors data
@@ -35,7 +36,7 @@ func WebsiteVisitors(w http.ResponseWriter, r *http.Request) {
 	visitors := displayVisitors{LoggedIn: user, Website: website}
 
 	// get visitor data
-	v, err := website.LastVisitors(timeStart, timeEnd, 10)
+	v, err := website.TopVisitors(timeStart, timeEnd, 10)
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -49,6 +50,14 @@ func WebsiteVisitors(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+
+	lastVisitors, err := website.LastVisitors(timeStart, timeEnd, 10)
+	if err != nil {
+		fmt.Println("Website.LastVisitors error: ", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	visitors.LastVisitors = lastVisitors
 
 	err = templates.Execute(w, "displayVisitors", visitors)
 	if err != nil {
