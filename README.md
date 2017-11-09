@@ -34,6 +34,8 @@ a lot in the future.
 
 - [ ] Implement Browser versions logging
 
+- [ ] Move from template rendering to modern js frontend
+
 
 # Database design
 
