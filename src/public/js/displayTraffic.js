@@ -30,58 +30,27 @@ function displayClicks() {
     return clicksTraffic;
 }
 
+// changes Count, Date from JSON object to {x, y}
+// ie. format that chartJS understand
+function prepareData(trafficArr) {
+    arr = [];
+    for (i = 0; i < trafficArr.length; i++) {
+        obj = {};
+        obj['x'] = trafficArr[i].Date;
+        obj['y'] = trafficArr[i].Count;
+        arr.push(obj);
+    }
+    return arr;
+}
+
 var landTraffic = displayLandTraffic()
 var clicksTraffic = displayClicks()
 
 var landChart = document.getElementById('landsChart');
 var clicksChart = document.getElementById('clicksChart');
 
+var landData = prepareData(landTraffic["Lands"]);
+var clickData = prepareData(clicksTraffic["Clicks"]);
 
-// preparesChartDate prepares chart data out of json string
-//
-function prepareChartData(jsonData, nameOfClicks) {
-    var arr = [];
-    var data = jsonData;
-    // if json data does not exist return empty array
-    if (data == null) {
-        return arr;
-    }
-    var dayMS = 24 * 60 * 60 * 1000; // miliseconds
-
-    for (var i = 0; i < data.length; i++) {
-        var date1 = data[i].Date;
-
-        // last item in array
-        if (i + 1 == data.length) {
-            var obj = { 'x': date1, 'y': data[i][nameOfClicks] }
-            arr.push(obj)
-            break;
-        }
-        var date2 = data[i + 1].Date;
-
-        var obj = {}
-        obj['x'] = date1;
-        obj['y'] = data[i][nameOfClicks];
-        arr.push(obj);
-
-        // if the date has no data, this makes sure
-        // the number for that data is 0
-        //(chartJS is not able to do that automatically)
-        if (date1 + dayMS < date2) {
-            d = date1 + dayMS
-            while (d < date2) {
-                var obj = { 'x': d, 'y': 0 }
-                arr.push(obj)
-                d += dayMS;
-            }
-        }
-    }
-    return arr;
-}
-
-//var landData = createLandChartData(landTraffic);
-var landData = prepareChartData(landTraffic['Lands'], 'LandNumber');
-var clicksData = prepareChartData(clicksTraffic['Clicks'], 'ClicksNum')
-//var clicksData = createClicksChartData(clicksTraffic);
 CreateChart(landChart, landData);
-CreateChart(clicksChart, clicksData);
+CreateChart(clicksChart, clickData);

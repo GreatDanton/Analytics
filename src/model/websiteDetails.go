@@ -39,14 +39,17 @@ func GetWebsiteDetail(websiteID, userID string) (Website, error) {
 // WebsiteTraffic is used to parse dailyLands and number of lands
 // from the chosen timeframe
 type WebsiteTraffic struct {
-	NumOfLands int64       // displays whole number of lands in timeframe
-	Lands      []DailyLand // all lands fetched by day
+	NumOfLands int64   // displays whole number of lands in timeframe
+	Lands      []Daily // all lands fetched by day
 }
 
-// DailyLand holds traffic data for chosen day
-type DailyLand struct {
-	Date       int64 // which day lands occur
-	LandNumber int64 // number of lands that day
+// Daily holds date and number of occurrences for each day
+// currently we are using it to hold data for
+// - number of lands per day
+// - number of clicks per day
+type Daily struct {
+	Date  int64 // which day it occurs
+	Count int64 // number of occurrences
 }
 
 // GetLands returns number of lands for each day between the timeFrame
@@ -80,7 +83,7 @@ func (w Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) 
 		if err != nil {
 			return traffic, err
 		}
-		day := DailyLand{Date: ms, LandNumber: count}
+		day := Daily{Date: ms, Count: count}
 		traffic.Lands = append(traffic.Lands, day)
 		traffic.NumOfLands += count
 	}
@@ -88,24 +91,51 @@ func (w Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) 
 	if err != nil {
 		return traffic, err
 	}
+
+	// fix missing dates
+	traffic.Lands = addMissingDates(&traffic.Lands)
+
 	// everything is allright return traffic type
 	return traffic, nil
+}
+
+// addMissingDates adds dates with count = 0 between the two dates
+// parsed from db that are more than one day apart
+func addMissingDates(dateArr *[]Daily) []Daily {
+	fixedArr := []Daily{}
+	const dayMS = 24 * 60 * 60 * 1000 // num of miliseconds in one day
+
+	for i := 0; i < len(*dateArr); i++ {
+		item := (*dateArr)[i]
+		if i+1 == len(*dateArr) {
+			fixedArr = append(fixedArr, item)
+			break
+		}
+		nextItem := (*dateArr)[i+1]
+		tmp := Daily{}
+		tmp.Date = item.Date
+		tmp.Count = item.Count
+		fixedArr = append(fixedArr, tmp)
+
+		if item.Date+dayMS < nextItem.Date {
+			d := item.Date + dayMS
+			for d < nextItem.Date {
+				fixedArr = append(fixedArr, Daily{Date: d, Count: 0})
+				d += dayMS
+			}
+		}
+	}
+	return fixedArr
 }
 
 // WebsiteClicks is used to hold clicks data
 type WebsiteClicks struct {
 	NumOfClicks int64 // all clicks counted
-	Clicks      []DailyClicks
-}
-
-// DailyClicks holds clicks per day data
-type DailyClicks struct {
-	Date      int64 // unix time in miliseconds
-	ClicksNum int64 // number of clicks for each day
+	Clicks      []Daily
 }
 
 // GetLandsJSON returns lands traffic in json string
-func (w *Website) GetLandsJSON(timeStart, timeEnd time.Time) (string, error) {
+func (w Website) GetLandsJSON(timeStart, timeEnd time.Time) (string, error) {
 	landsTraffic, err := w.GetLands(timeStart, timeEnd)
 	if err != nil {
 		return "", fmt.Errorf("GetLandsJSON: GetLands: %v", err)
@@ -148,13 +178,14 @@ func (w Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) 
 		if err != nil {
 			return clicks, err
 		}
-		clicks.Clicks = append(clicks.Clicks, DailyClicks{Date: ms, ClicksNum: count})
+		clicks.Clicks = append(clicks.Clicks, Daily{Date: ms, Count: count})
 		clicks.NumOfClicks += count
 	}
 	err = rows.Err()
 	if err != nil {
 		return clicks, err
 	}
+	clicks.Clicks = addMissingDates(&clicks.Clicks)
 
 	return clicks, nil
 }
