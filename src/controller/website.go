@@ -69,7 +69,7 @@ func WebsiteTraffic(w http.ResponseWriter, r *http.Request) {
 	}
 	details.Clicks = clicks
 
-	err = templates.Execute(w, "displayTraffic", details)
+	err = templates.Execute(w, "displayOverview", details)
 	if err != nil {
 		fmt.Println("Website: websiteTraffic:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

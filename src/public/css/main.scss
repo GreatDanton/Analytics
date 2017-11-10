@@ -12,6 +12,7 @@ $box-shadow-card: 2px 2px 10px rgba(0, 0, 0, 0.2);
 // Fonts
 $font-family-p: "Fira Sans", sans-serif;
 $font-size-p: 14px;
+$font-family-h: "Montserrat", sans-serif;
 
 // font colors
 $color-text: #313131;
@@ -40,6 +41,10 @@ body {
     background-color: $color-background;
     color: $color-text;
     font-family: $font-family-p;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: $font-family-h;
 }
 
 // displaying navbar with buttons
@@ -93,6 +98,11 @@ body {
     margin-bottom: 40px;
 }
 
+.card-website-title {
+    align-items: center;
+    margin-bottom: 40px;
+}
+
 .main-container {
     max-width: 100%;
     width: 900px;
@@ -117,6 +127,7 @@ body {
     flex-flow: row;
     justify-content: center;
     flex-wrap: wrap;
+    padding: 40px 0;
 }
 
 .card-website {

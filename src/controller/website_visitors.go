@@ -11,7 +11,7 @@ import (
 	"github.com/greatdanton/analytics/src/templates"
 )
 
-type displayVisitors struct {
+type displayTraffic struct {
 	Website      model.Website
 	TopVisitors  model.Visitors // top visitors (highest numbers of lands)
 	LastVisitors model.Visitors // last visitors on that landed on your website
@@ -33,7 +33,7 @@ func WebsiteVisitors(w http.ResponseWriter, r *http.Request) {
 	timeEnd := time.Now()
 	timeStart := timeEnd.AddDate(0, -1, 0)
 
-	visitors := displayVisitors{LoggedIn: user, Website: website}
+	visitors := displayTraffic{LoggedIn: user, Website: website}
 
 	// get visitor data
 	v, err := website.TopVisitors(timeStart, timeEnd, 10)
@@ -59,7 +59,7 @@ func WebsiteVisitors(w http.ResponseWriter, r *http.Request) {
 	}
 	visitors.LastVisitors = lastVisitors
 
-	err = templates.Execute(w, "displayVisitors", visitors)
+	err = templates.Execute(w, "displayTraffic", visitors)
 	if err != nil {
 		return
 	}

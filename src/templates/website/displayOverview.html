@@ -1,0 +1,57 @@
+{{define "displayOverview"}}
+<!DOCTYPE html>
+
+<head>
+    <title>{{.Website.Name}} Overview</title>
+    {{template "styles"}}
+</head>
+
+<body>
+    {{template "navbar" .}}
+    <div class="main-container">
+        <div class="row row-wrap card-website-title">
+            <div class="col-20">
+                <h3>{{.Website.Name}}</h3>
+            </div>
+            <div class="col-60">
+                <h1 class="text-centered text-upper">Overview</h1>
+            </div>
+        </div>
+
+        {{template "website-actionBtns" .}}
+
+        <div class="margin-t-40"></div>
+
+        <div class="cards-container">
+            <div class="card-small">
+                <h3>Lands</h3>
+                <h2 id="numOfLands"></h2>
+            </div>
+
+            <div class="card-small">
+                <h3>Clicks</h3>
+                <h2 id="numOfClicks"></h2>
+            </div>
+        </div>
+
+        <h2 class="chart-title text-upper">Client lands</h2>
+        <canvas id="landsChart"></canvas>
+
+        <div class="margin-t-40"></div>
+
+        <h2 class="chart-title text-upper">Client clicks</h2>
+        <canvas id="clicksChart"></canvas>
+    </div>
+
+    <!-- data that will be displayed on charts -->
+    <p id="user-lands-traffic" class="hidden">{{.Traffic}}</p>
+    <p id="user-clicks" class="hidden">{{.Clicks}}</p>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js"></script>
+<script src="/public/js/charts.js"></script>
+<script src="/public/js/displayTraffic.js"></script>
+
+</html>
+
+{{end}}
