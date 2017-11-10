@@ -12,13 +12,13 @@ a lot in the future.
 
 # Screenshots
 
-## Analytics page
-![charts example](/images/charts.png)
+## Analytics Overview page
+![charts example](/images/overview.png)
 
-## Visitors analytics page
-![visitors example](/images/visitors.png)
+## Traffic details page
+![traffic example](/images/traffic.png)
 
-## Dashboard
+## Websites Dashboard
 ![dashboard](/images/dashboard.png)
 
 ## Edit existing website
