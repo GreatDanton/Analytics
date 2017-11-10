@@ -93,7 +93,7 @@ func (w Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) 
 	}
 
 	// fix missing dates
-	traffic.Lands = addMissingDates(&traffic.Lands)
+	traffic.Lands = addMissingDates(&traffic.Lands, endTime)
 
 	// everything is allright return traffic type
 	return traffic, nil
@@ -101,16 +101,28 @@ func (w Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) 
 
 // addMissingDates adds dates with count = 0 between the two dates
 // parsed from db that are more than one day apart
-func addMissingDates(dateArr *[]Daily) []Daily {
+func addMissingDates(dateArr *[]Daily, endTime time.Time) []Daily {
 	fixedArr := []Daily{}
 	const dayMS = 24 * 60 * 60 * 1000 // num of miliseconds in one day
 
 	for i := 0; i < len(*dateArr); i++ {
 		item := (*dateArr)[i]
+
+		// add missing dates for last item in dateArr
 		if i+1 == len(*dateArr) {
 			fixedArr = append(fixedArr, item)
+			// if there are dates missing add them as zero here
+			end := endTime.Unix() * 1000 // in ms
+			d := item.Date + dayMS
+			if d < end {
+				for d < end {
+					fixedArr = append(fixedArr, Daily{Date: d, Count: 0})
+					d += dayMS
+				}
+			}
 			break
 		}
+
 		nextItem := (*dateArr)[i+1]
 		tmp := Daily{}
 		tmp.Date = item.Date
@@ -185,7 +197,7 @@ func (w Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) 
 	if err != nil {
 		return clicks, err
 	}
-	clicks.Clicks = addMissingDates(&clicks.Clicks)
+	clicks.Clicks = addMissingDates(&clicks.Clicks, timeEnd)
 
 	return clicks, nil
 }
