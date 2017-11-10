@@ -1,8 +1,8 @@
 table {
 	font-family: $font-family-p;
 	font-size: 12px;
-    width: 480px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 480px;
 	text-align: left;
     border-collapse: collapse;
     margin: 0 auto 45px auto;
@@ -11,8 +11,8 @@ $table-h-background: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox
 
 table th {
 	font-size: 14px;
-	font-weight: bold;
-	padding: 5px 10px;
+	font-weight: 400;
+	padding: 8px 10px;
 	color: $color-text;
 	background-image: $table-h-background;
 }
