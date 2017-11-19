@@ -93,7 +93,7 @@ func (w Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) 
 	}
 
 	// fix missing dates
-	traffic.Lands = addMissingDates(&traffic.Lands, endTime)
+	traffic.Lands = addMissingDates(&traffic.Lands, startTime, endTime)
 
 	// everything is allright return traffic type
 	return traffic, nil
@@ -101,14 +101,28 @@ func (w Website) GetLands(startTime, endTime time.Time) (WebsiteTraffic, error) 
 
 // addMissingDates adds dates with count = 0 between the two dates
 // parsed from db that are more than one day apart
-func addMissingDates(dateArr *[]Daily, endTime time.Time) []Daily {
+func addMissingDates(dateArr *[]Daily, startTime time.Time, endTime time.Time) []Daily {
 	fixedArr := []Daily{}
 	const dayMS = 24 * 60 * 60 * 1000 // num of miliseconds in one day
 
 	for i := 0; i < len(*dateArr); i++ {
 		item := (*dateArr)[i]
 
-		// add missing dates for last item in dateArr
+		// add missing dates before the first item in dateArr
+		// this ensures graph is always displayed for the whole range
+		// between startTime and endTime
+		if i == 0 {
+			start := startTime.Unix()*1000 + dayMS // in ms
+			d := item.Date
+			if start < d {
+				for start < d {
+					fixedArr = append(fixedArr, Daily{Date: start, Count: 0})
+					start += dayMS
+				}
+			}
+		}
+
+		// add missing dates after the last item in dateArr
 		if i+1 == len(*dateArr) {
 			fixedArr = append(fixedArr, item)
 			// if there are dates missing add them as zero here
@@ -129,6 +143,7 @@ func addMissingDates(dateArr *[]Daily, endTime time.Time) []Daily {
 		tmp.Count = item.Count
 		fixedArr = append(fixedArr, tmp)
 
+		// add missing dates in between start and end where necessary
 		if item.Date+dayMS < nextItem.Date {
 			d := item.Date + dayMS
 			for d < nextItem.Date {
@@ -197,7 +212,7 @@ func (w Website) GetClicks(timeStart, timeEnd time.Time) (WebsiteClicks, error) 
 	if err != nil {
 		return clicks, err
 	}
-	clicks.Clicks = addMissingDates(&clicks.Clicks, timeEnd)
+	clicks.Clicks = addMissingDates(&clicks.Clicks, timeStart, timeEnd)
 
 	return clicks, nil
 }
